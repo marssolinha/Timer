@@ -31,3 +31,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     source/statusbar.h
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/res/values/libs.xml

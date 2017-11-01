@@ -31,8 +31,15 @@ Item {
             verticalAlignment: Text.AlignVCenter
             color: textColor
             opacity: 1.0 - Math.abs(Tumbler.displacement);
-            font.pixelSize: 92;
+            font.pixelSize: Math.round((item.width /3) * 0.70);
             font.weight: Font.Light
+
+            Behavior on font.pixelSize {
+                NumberAnimation {
+                    duration: 200
+                    easing.type: Easing.InQuad
+                }
+            }
         }
     }
 
