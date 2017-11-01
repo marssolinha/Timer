@@ -52,6 +52,20 @@ ApplicationWindow {
         }
     }
 
+    Page {
+        anchors.fill: parent
+
+        Rectangle {
+            anchors.fill: parent
+            color: "transparent"
+
+            TimerComponent {
+                width: parent.width
+                height: parent.height /2
+            }
+        }
+    }
+
     FontLoader {
         id: material_icon
         source: "qrc:/fonts/MaterialIcons.ttf"
