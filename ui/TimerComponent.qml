@@ -31,15 +31,15 @@ Item {
             verticalAlignment: Text.AlignVCenter
             color: textColor
             opacity: 1.0 - Math.abs(Tumbler.displacement);
-            font.pixelSize: Math.round((item.width /3) * 0.70);
+            font.pixelSize: Math.round((item.width /3) * 0.65);
             font.weight: Font.Light
 
-            Behavior on font.pixelSize {
+            /*Behavior on font.pixelSize {
                 NumberAnimation {
                     duration: 200
-                    easing.type: Easing.InQuad
+                    easing.type: Easing.InBack
                 }
-            }
+            }*/
         }
     }
 

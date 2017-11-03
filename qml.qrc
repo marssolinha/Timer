@@ -4,5 +4,6 @@
         <file>qtquickcontrols2.conf</file>
         <file>fonts/MaterialIcons.ttf</file>
         <file>ui/TimerComponent.qml</file>
+        <file>ui/DialogConnection.qml</file>
     </qresource>
 </RCC>

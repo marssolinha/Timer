@@ -71,6 +71,8 @@ ApplicationWindow {
                     text: "\uE0C3"
                     font.family: material_icon.name
                     font.pixelSize: 28
+
+                    onClicked: dialogConnection.open();
                 }
                 ToolButton {
                     Layout.fillHeight: true
@@ -93,7 +95,7 @@ ApplicationWindow {
                 spacing: 2
 
                 Item {
-                    Layout.alignment: Qt.AlignCenter
+                    Layout.alignment: object.timer_started? Qt.AlignLeft : Qt.AlignCenter
                     Layout.fillHeight: !object.timer_started
                     Layout.fillWidth: !object.timer_started
                     width: 150
@@ -102,6 +104,11 @@ ApplicationWindow {
                     TimerComponent {
                         id: timer_prepare
                         anchors.fill: parent
+
+                        MouseArea {
+                            enabled: object.timer_started
+                            anchors.fill: parent
+                        }
                     }
                 }
 
@@ -116,6 +123,10 @@ ApplicationWindow {
                         visible: object.timer_started
                         id: counttimer
                         anchors.fill: parent
+
+                        MouseArea {
+                            anchors.fill: parent
+                        }
                     }
                 }
 
@@ -139,6 +150,10 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    DialogConnection {
+        id: dialogConnection
     }
 
     Timer {
