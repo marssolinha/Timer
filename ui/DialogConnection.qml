@@ -18,7 +18,7 @@ Dialog {
     contentItem: Flickable {
         width: parent.width
         height: parent.height
-        contentHeight: parent.height *1.2
+        contentHeight: parent.height *1.1
 
         Column {
             id: column
@@ -46,7 +46,7 @@ Dialog {
 
                 //list_type_device.get(device_type.currentIndex)['type']
                 onCurrentIndexChanged: {
-                    console.log(currentIndex)
+
                 }
             }
 
@@ -64,6 +64,7 @@ Dialog {
 
                         Label {
                             text: qsTr("Dados do controlador")
+                            font.bold: true
                             Layout.fillWidth: true
                         }
 
@@ -89,6 +90,12 @@ Dialog {
                         width: parent.width
                         placeholderText: qsTr("Código PIN")
                     }
+
+                    Button {
+                        text: qsTr("Conectar")
+                        width: parent.width
+                        Material.background: Material.color(Material.Green, Material.Shade500)
+                    }
                 }
             }
 
@@ -103,6 +110,51 @@ Dialog {
 
                     Label {
                         text: qsTr("Controlador")
+                        font.bold: true
+                    }
+
+                    RowLayout {
+                        width: parent.width
+                        Label {
+                            text: qsTr("Nome:");
+                            width: 30
+                            font.bold: true
+                        }
+                        Label {
+                            text: host.getHostname();
+                            horizontalAlignment: Label.AlignHCenter
+                            Layout.fillWidth: true
+                        }
+                    }
+
+                    RowLayout {
+                        width: parent.width
+                        Label {
+                            text: qsTr("PIN:");
+                            width: 30
+                            font.bold: true
+                        }
+                        Label {
+                            text: host.getPin();
+                            horizontalAlignment: Label.AlignHCenter
+                            Layout.fillWidth: true
+                            font.pixelSize: 28
+                        }
+                    }
+
+                    RowLayout {
+                        width: parent.width
+                        Label {
+                            text: qsTr("Endereço:");
+                            width: 30
+                            font.bold: true
+                        }
+                        Label {
+                            text: host.getAddress();
+                            horizontalAlignment: Label.AlignHCenter
+                            Layout.fillWidth: true
+                            font.pixelSize: 28
+                        }
                     }
                 }
             }

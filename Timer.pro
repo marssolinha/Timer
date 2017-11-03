@@ -1,4 +1,4 @@
-QT += quick
+QT += quick network
 android: QT += androidextras
 CONFIG += c++11
 
@@ -14,7 +14,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
-    source/statusbar.cpp
+    source/statusbar.cpp \
+    source/hostinfo.cpp
 
 RESOURCES += qml.qrc
 
@@ -30,7 +31,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    source/statusbar.h
+    source/statusbar.h \
+    source/hostinfo.h
 
 DISTFILES += \
     android/AndroidManifest.xml \

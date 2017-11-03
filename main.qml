@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
 
 import StatusBar 0.1
+import HostInfo 0.1
 import "./ui"
 
 ApplicationWindow {
@@ -208,6 +209,10 @@ ApplicationWindow {
     FontLoader {
         id: material_icon
         source: "qrc:/fonts/MaterialIcons.ttf"
+    }
+
+    HostInfo {
+        id: host
     }
 
     StatusBar {
