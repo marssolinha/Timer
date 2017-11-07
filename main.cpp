@@ -3,6 +3,7 @@
 
 #include "./source/statusbar.h"
 #include "./source/hostinfo.h"
+#include "./source/networkdiscovery.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,6 +12,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<StatusBar>("StatusBar", 0, 1, "StatusBar");
     qmlRegisterType<HostInfo>("HostInfo", 0, 1, "HostInfo");
+    qmlRegisterType<NetworkDiscovery>("NetworkDiscovery", 0, 1, "NetworkDiscovery");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));

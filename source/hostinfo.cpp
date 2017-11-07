@@ -2,12 +2,20 @@
 
 HostInfo::HostInfo(QObject *parent) : QObject(parent)
 {
-
+    QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
+    for (auto &iface : interfaces) {
+        if (iface.name().indexOf("wlan") >= 0 || iface.name().indexOf("wlp") >= 0)
+            interface = iface.name();
+    }
 }
 
-QString HostInfo::getHostname()
+QString HostInfo::getAddress()
 {
-    return QHostInfo::localHostName();
+    QNetworkInterface iface = QNetworkInterface::interfaceFromName(interface);
+    QList<QNetworkAddressEntry> entries = iface.addressEntries();
+    if (!entries.isEmpty())
+        return iface.addressEntries().first().ip().toString();
+    return QString("");
 }
 
 int HostInfo::getPin()
@@ -15,7 +23,3 @@ int HostInfo::getPin()
     return qrand() % 10000;
 }
 
-QString HostInfo::getAddress()
-{
-    return "";
-}

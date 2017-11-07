@@ -45,9 +45,8 @@ Dialog {
                 model: list_type_device
 
                 //list_type_device.get(device_type.currentIndex)['type']
-                onCurrentIndexChanged: {
-
-                }
+                onCurrentIndexChanged: settings.type = currentIndex;
+                Component.onCompleted: device_type.currentIndex = settings.type;
             }
 
             GroupBox {
@@ -67,34 +66,60 @@ Dialog {
                             font.bold: true
                             Layout.fillWidth: true
                         }
+                    }
 
-                        RoundButton {
-                            text: "\uE8B6"
-                            font.family: material_icon.name
-                            font.pixelSize: 15
-                            Material.background: Material.color(Material.Green, Material.Shade500)
+                    RowLayout {
+                        width: parent.width
+                        Label {
+                            text: qsTr("Controlador:")
+                            Layout.preferredWidth: 105
+                            font.bold: true
+                        }
+                        ItemDelegate {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 35
 
-                            onClicked: {
-                                console.log("Search");
+                            Label {
+                                anchors.fill: parent
+
+                                text: (settings.controller_addr === "")? qsTr("Nenhum controlador definido") :
+                                          (settings.controller_name)? settings.controller_name + " ("+ settings.controller_addr +")" : settings.controller_addr
+                                color: Material.foreground
+                                elide: Label.ElideRight
+
+                                verticalAlignment: Label.AlignVCenter
                             }
+
+                            onClicked: dialogNetworkDiscovery.open()
                         }
                     }
 
-                    ComboBox {
-                        id: list_controler
+                    RowLayout {
                         width: parent.width
-                    }
+                        Label {
+                            text: qsTr("Código PIN")
+                            Layout.preferredWidth: 105
+                            font.bold: true
+                        }
 
-                    TextField {
-                        id: field_pin
-                        width: parent.width
-                        placeholderText: qsTr("Código PIN")
+                        ItemDelegate {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 35
+
+                            TextField {
+                                id: field_pin
+                                width: parent.width
+                                placeholderText: qsTr("Código PIN")
+                            }
+                        }
                     }
 
                     Button {
                         text: qsTr("Conectar")
                         width: parent.width
                         Material.background: Material.color(Material.Green, Material.Shade500)
+
+                        onClicked: validateFields();
                     }
                 }
             }
@@ -116,14 +141,24 @@ Dialog {
                     RowLayout {
                         width: parent.width
                         Label {
-                            text: qsTr("Nome:");
-                            width: 30
+                            text: qsTr("Node dispositivo:")
+                            Layout.preferredWidth: 105
                             font.bold: true
                         }
-                        Label {
-                            text: host.getHostname();
-                            horizontalAlignment: Label.AlignHCenter
+                        ItemDelegate {
                             Layout.fillWidth: true
+                            Layout.preferredHeight: 35
+
+                            Label {
+                                anchors.fill: parent
+                                text: settings.local_name
+                                horizontalAlignment: Label.AlignHCenter
+                                verticalAlignment: Label.AlignVCenter
+                                Layout.fillWidth: true
+                                font.pixelSize: 24
+                            }
+
+                            onClicked: dialogDeviceName.open();
                         }
                     }
 
@@ -131,14 +166,23 @@ Dialog {
                         width: parent.width
                         Label {
                             text: qsTr("PIN:");
-                            width: 30
+                            Layout.preferredWidth: 105
                             font.bold: true
                         }
-                        Label {
-                            text: host.getPin();
-                            horizontalAlignment: Label.AlignHCenter
+                        ItemDelegate {
                             Layout.fillWidth: true
-                            font.pixelSize: 28
+                            Layout.preferredHeight: 35
+
+                            Label {
+                                anchors.fill: parent
+                                text: host.getPin();
+                                horizontalAlignment: Label.AlignHCenter
+                                verticalAlignment: Label.AlignVCenter
+                                Layout.fillWidth: true
+                                font.pixelSize: 24
+                            }
+
+                            //onClicked: dialogDeviceName.open();
                         }
                     }
 
@@ -146,18 +190,49 @@ Dialog {
                         width: parent.width
                         Label {
                             text: qsTr("Endereço:");
-                            width: 30
+                            Layout.preferredWidth: 105
                             font.bold: true
                         }
-                        Label {
-                            text: host.getAddress();
-                            horizontalAlignment: Label.AlignHCenter
+                        ItemDelegate {
                             Layout.fillWidth: true
-                            font.pixelSize: 28
+                            Layout.preferredHeight: 35
+
+                            Label {
+                                anchors.fill: parent
+                                text: host.getAddress();
+                                horizontalAlignment: Label.AlignHCenter
+                                verticalAlignment: Label.AlignVCenter
+                                Layout.fillWidth: true
+                                font.pixelSize: 24
+                            }
+
+                            //onClicked: dialogDeviceName.open();
                         }
                     }
                 }
             }
         }
+    }
+
+    function validateFields()
+    {
+        var validate = 0;
+        var _message = "";
+
+        if (settings.controller_addr === "") {
+            ++validate;
+            _message += "* É necessário indicar um controlador<br/>";
+        }
+        if (settings.controller_pin === "") {
+            ++validate;
+            _message += "* É necessário indicar o código PIN do controlador";
+        }
+
+        if (validate > 0) {
+            message._text = _message;
+            message.visible = true;
+            return;
+        }
+
     }
 }

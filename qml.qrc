@@ -5,5 +5,7 @@
         <file>fonts/MaterialIcons.ttf</file>
         <file>ui/TimerComponent.qml</file>
         <file>ui/DialogConnection.qml</file>
+        <file>ui/DialogDeviceName.qml</file>
+        <file>ui/DialogNetworkDiscovery.qml</file>
     </qresource>
 </RCC>

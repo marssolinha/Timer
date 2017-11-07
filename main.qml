@@ -2,9 +2,11 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
+import Qt.labs.settings 1.0
 
 import StatusBar 0.1
 import HostInfo 0.1
+import NetworkDiscovery 0.1
 import "./ui"
 
 ApplicationWindow {
@@ -20,6 +22,20 @@ ApplicationWindow {
         property bool timer_started: false
         property int _time: 0
         property int _counttimer: 0
+    }
+
+    Settings {
+        id: settings
+        property int type: 0
+        property int pin: 0
+        property string controller_name: ""
+        property string controller_addr: ""
+        property string controller_pin: ""
+
+        property string local_name: ""
+        property string local_addr: ""
+
+        onTypeChanged: console.log(type);
     }
 
     header: Rectangle {
@@ -157,6 +173,14 @@ ApplicationWindow {
         id: dialogConnection
     }
 
+    DialogDeviceName {
+        id: dialogDeviceName
+    }
+
+    DialogNetworkDiscovery {
+        id: dialogNetworkDiscovery
+    }
+
     Timer {
         id: timer
         interval: 1000
@@ -206,6 +230,45 @@ ApplicationWindow {
         return str;
     }
 
+    ToolTip {
+        id: message
+        property string _text
+
+        timeout: 5000
+        topMargin: parent.height -tooltip_text.parent.height -50
+        x: (window.width - tooltip_text.parent.width) /2 -20
+        z: 100
+
+        width: 0
+        height: 0
+
+        Rectangle {
+            width: tooltip_text.contentWidth + 10
+            height: tooltip_text.contentHeight + 10
+
+            color: Qt.rgba(Material.background.r, Material.background.g, Material.background.b, 0.8)
+            radius: 3
+
+            Column {
+                anchors.fill: parent
+                padding: 5
+
+                Text {
+                    id: tooltip_text
+                    width: window.width *0.8
+                    height: contentHeight
+
+                    anchors.margins: 5
+
+                    text: message._text
+                    color: Material.foreground
+
+                    wrapMode: Text.WordWrap
+                }
+            }
+        }
+    }
+
     FontLoader {
         id: material_icon
         source: "qrc:/fonts/MaterialIcons.ttf"
@@ -213,6 +276,14 @@ ApplicationWindow {
 
     HostInfo {
         id: host
+    }
+
+    NetworkDiscovery {
+        id: networkDiscovery
+        type: settings.type
+        device: settings.local_name
+
+        //onControllerChanged: console.log(Object.keys(controller))
     }
 
     StatusBar {
