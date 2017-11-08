@@ -16,7 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp \
     source/statusbar.cpp \
     source/hostinfo.cpp \
-    source/networkdiscovery.cpp
+    source/networkdiscovery.cpp \
+    source/tcpconnect.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,7 +35,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     source/statusbar.h \
     source/hostinfo.h \
-    source/networkdiscovery.h
+    source/networkdiscovery.h \
+    source/tcpconnect.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
