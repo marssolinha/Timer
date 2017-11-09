@@ -7,6 +7,8 @@ import Qt.labs.settings 1.0
 import StatusBar 0.1
 import HostInfo 0.1
 import NetworkDiscovery 0.1
+import TcpConnect 0.1
+
 import "./ui"
 
 ApplicationWindow {
@@ -34,8 +36,6 @@ ApplicationWindow {
 
         property string local_name: ""
         property string local_addr: ""
-
-        onTypeChanged: console.log(type);
     }
 
     header: Rectangle {
@@ -284,6 +284,16 @@ ApplicationWindow {
         device: settings.local_name
 
         //onControllerChanged: console.log(Object.keys(controller))
+    }
+
+    TcpConnect {
+        id: tcp_connect
+        serviceType: settings.type
+    }
+
+    Connections {
+        target: settings
+        //onTypeChanged: console.log("Type change", settings.type);
     }
 
     StatusBar {
