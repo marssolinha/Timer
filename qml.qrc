@@ -7,5 +7,6 @@
         <file>ui/DialogConnection.qml</file>
         <file>ui/DialogDeviceName.qml</file>
         <file>ui/DialogNetworkDiscovery.qml</file>
+        <file>ui/DialogPinCode.qml</file>
     </qresource>
 </RCC>

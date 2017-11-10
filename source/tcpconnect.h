@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QJsonValue>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QList>
@@ -13,6 +15,7 @@ class TcpConnect : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(quint16 serviceType READ serviceType WRITE setServiceType NOTIFY serviceTypeChanged)
+    Q_PROPERTY(QString addressController READ addressController WRITE setAddressController NOTIFY addressControllerChanged)
 
 public:
     /**
@@ -26,6 +29,10 @@ Q_SIGNALS:
      * @brief serviceTypeChanged
      */
     void serviceTypeChanged();
+    /**
+     * @brief addressControllerChanged
+     */
+    void addressControllerChanged();
 
 public slots:
 
@@ -38,6 +45,18 @@ protected slots:
      * @brief server_stop
      */
     void server_stop();
+    /**
+     * @brief client_connectController
+     */
+    void client_connectController();
+    /**
+     * @brief client_disconnectController
+     */
+    void client_disconnectController();
+    /**
+     * @brief client_disconnected
+     */
+    void client_disconnected();
 
 private slots:
     /**
@@ -62,9 +81,20 @@ private slots:
      * @brief server_disconnectSocket
      */
     void server_disconnectSocket();
+    /**
+     * @brief client_readyRead
+     */
+    void client_readySocket();
+
+    /**
+     * @brief setAddressController
+     * @param address
+     */
+    void setAddressController(QString address);
 
 private:
     QTcpServer *server;
+    QTcpSocket *client;
     QList<QTcpSocket *> clients;
 
     const quint16 controller_port = 4191;
@@ -83,6 +113,9 @@ private:
     };
 
     bool server_state;
+
+    QString _addressController;
+    QString addressController() { return _addressController; }
 };
 
 #endif // TCPCONNECT_H

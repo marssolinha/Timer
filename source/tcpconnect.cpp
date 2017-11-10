@@ -3,15 +3,11 @@
 TcpConnect::TcpConnect(QObject *parent) : QObject(parent)
 {
     server = new QTcpServer(this);
-    connect(server, SIGNAL(newConnection()), this, SLOT(server_incomingConnect()));
-
-    /*if (!server->listen(QHostAddress::AnyIPv4, controller_port)) {
-        qDebug() << "Server error:" << server->errorString();
-    } else {
-        server_state = true;
-    }*/
+    client = new QTcpSocket(this);
 
     connect(this, SIGNAL(serviceTypeChanged()), this, SLOT(interpreterService()));
+    connect(server, SIGNAL(newConnection()), this, SLOT(server_incomingConnect()));
+    connect(client, SIGNAL(disconnected()), this, SLOT(client_disconnected()));
 }
 
 void TcpConnect::setServiceType(quint16 _type)
@@ -31,6 +27,10 @@ void TcpConnect::interpreterService()
         break;
     }
 }
+
+/*
+ * Controller functions
+ */
 
 void TcpConnect::server_start()
 {
@@ -60,17 +60,24 @@ void TcpConnect::server_incomingConnect()
     connect(_client, SIGNAL(readyRead()), this, SLOT(server_readyRead()));
     connect(_client, SIGNAL(disconnected()), this, SLOT(server_disconnectSocket()));
 
+    qDebug() << "New connection";
     clients.append(_client);
 }
 
 void TcpConnect::server_readyRead()
 {
-    for (auto client : clients) {
-        if (client->bytesAvailable()) {
-            client->flush();
-            QByteArray data = client->readAll();
+    for (auto v_client : clients) {
+        if (v_client->bytesAvailable()) {
+            v_client->flush();
+            QByteArray data = v_client->readAll();
             QJsonParseError parseError;
             QJsonDocument doc_tcp = QJsonDocument::fromJson(data, &parseError);
+
+            if (parseError.error == 0) {
+                for (const QJsonValue &json_object : doc_tcp.array()) {
+                    qDebug() << json_object.toObject();
+                }
+            }
         }
     }
 }
@@ -78,11 +85,57 @@ void TcpConnect::server_readyRead()
 void TcpConnect::server_disconnectSocket()
 {
     int i = 0;
-    for (auto client : clients) {
-        if (client->state() != QTcpSocket::ConnectedState) {
-            client->close();
+    for (auto v_client : clients) {
+        if (v_client->state() != QTcpSocket::ConnectedState) {
+            v_client->close();
             clients.removeAt(i);
         }
         ++i;
     }
+}
+
+/*
+ * Receiver functions
+ */
+
+void TcpConnect::client_connectController()
+{
+    if (_addressController != "") {
+        client->connectToHost(_addressController, controller_port);
+    }
+}
+
+void TcpConnect::client_disconnectController()
+{
+    if (client->isOpen()) {
+        client->close();
+    }
+}
+
+void TcpConnect::client_disconnected()
+{
+    qDebug() << "Disconnect";
+    client->deleteLater();
+}
+
+void TcpConnect::client_readySocket()
+{
+    client->flush();
+    while (client->canReadLine()) {
+        QByteArray data = client->readLine();
+        QJsonParseError parserError;
+        QJsonDocument doc_tcp = QJsonDocument::fromJson(data, &parserError);
+
+        if (parserError.error == 0) {
+            for (const QJsonValue &json_object : doc_tcp.array()) {
+                qDebug() << json_object.toObject();
+            }
+        }
+    }
+}
+
+void TcpConnect::setAddressController(QString address)
+{
+    _addressController = address;
+    emit addressControllerChanged();
 }

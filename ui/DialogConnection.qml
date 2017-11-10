@@ -110,6 +110,9 @@ Dialog {
                                 id: field_pin
                                 width: parent.width
                                 placeholderText: qsTr("Código PIN")
+                                text: settings.controller_pin
+
+                                onTextChanged: settings.controller_pin = text
                             }
                         }
                     }
@@ -175,14 +178,14 @@ Dialog {
 
                             Label {
                                 anchors.fill: parent
-                                text: host.getPin();
+                                text: settings.pin
                                 horizontalAlignment: Label.AlignHCenter
                                 verticalAlignment: Label.AlignVCenter
                                 Layout.fillWidth: true
                                 font.pixelSize: 24
                             }
 
-                            //onClicked: dialogDeviceName.open();
+                            onClicked: dialogPinCode.open()
                         }
                     }
 
@@ -233,6 +236,9 @@ Dialog {
             message.visible = true;
             return;
         }
+
+        tcp_connect.addressController  = settings.controller_addr;
+        tcp_connect.client_connectController();
 
     }
 }

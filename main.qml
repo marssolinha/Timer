@@ -36,6 +36,11 @@ ApplicationWindow {
 
         property string local_name: ""
         property string local_addr: ""
+
+        Component.onCompleted: {
+            if (!pin)
+                pin = host.getPin();
+        }
     }
 
     header: Rectangle {
@@ -85,7 +90,7 @@ ApplicationWindow {
 
                 ToolButton {
                     Layout.fillHeight: true
-                    text: "\uE0C3"
+                    text: "\uE337"
                     font.family: material_icon.name
                     font.pixelSize: 28
 
@@ -175,6 +180,10 @@ ApplicationWindow {
 
     DialogDeviceName {
         id: dialogDeviceName
+    }
+
+    DialogPinCode {
+        id: dialogPinCode
     }
 
     DialogNetworkDiscovery {
@@ -276,6 +285,8 @@ ApplicationWindow {
 
     HostInfo {
         id: host
+
+        onPinChanged: settings.pin = getPin();
     }
 
     NetworkDiscovery {
@@ -289,6 +300,7 @@ ApplicationWindow {
     TcpConnect {
         id: tcp_connect
         serviceType: settings.type
+        addressController: settings.controller_addr
     }
 
     Connections {
