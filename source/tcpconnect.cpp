@@ -7,7 +7,8 @@ TcpConnect::TcpConnect(QObject *parent) : QObject(parent)
 
     connect(this, SIGNAL(serviceTypeChanged()), this, SLOT(interpreterService()));
     connect(server, SIGNAL(newConnection()), this, SLOT(server_incomingConnect()));
-    connect(client, SIGNAL(disconnected()), this, SLOT(client_disconnected()));
+    connect(client, SIGNAL(connected()), this, SLOT(client_connectedController()));
+    connect(client, SIGNAL(readyRead()), this, SLOT(client_readySocket()));
 }
 
 void TcpConnect::setServiceType(quint16 _type)
@@ -20,9 +21,11 @@ void TcpConnect::interpreterService()
 {
     switch (l_service_type) {
     case RECEIVER:
+        server_disconnectAllSockets();
         server_stop();
         break;
     case CONTROLLER:
+        client_disconnectController();
         server_start();
         break;
     }
@@ -60,7 +63,7 @@ void TcpConnect::server_incomingConnect()
     connect(_client, SIGNAL(readyRead()), this, SLOT(server_readyRead()));
     connect(_client, SIGNAL(disconnected()), this, SLOT(server_disconnectSocket()));
 
-    qDebug() << "New connection";
+    qDebug() << "New connection" << _client->peerAddress().toString();
     clients.append(_client);
 }
 
@@ -87,11 +90,25 @@ void TcpConnect::server_disconnectSocket()
     int i = 0;
     for (auto v_client : clients) {
         if (v_client->state() != QTcpSocket::ConnectedState) {
+            qDebug() << "Disconnect" << v_client->peerAddress().toString();
             v_client->close();
+            v_client->deleteLater();
             clients.removeAt(i);
         }
         ++i;
     }
+}
+
+void TcpConnect::server_disconnectAllSockets()
+{
+    for (auto v_client : clients) {
+        if (v_client->state() == QTcpSocket::ConnectedState) {
+            qDebug() << "Disconnect" << v_client->peerAddress().toString();
+            v_client->close();
+            v_client->deleteLater();
+        }
+    }
+    clients.clear();
 }
 
 /*
@@ -100,26 +117,32 @@ void TcpConnect::server_disconnectSocket()
 
 void TcpConnect::client_connectController()
 {
-    if (_addressController != "") {
+    if (_addressController != "")
         client->connectToHost(_addressController, controller_port);
-    }
+}
+
+void TcpConnect::client_connectedController()
+{
+    client_state = true;
+    emit receiver_connectChanged();
 }
 
 void TcpConnect::client_disconnectController()
 {
-    if (client->isOpen()) {
+    if (client->isOpen())
         client->close();
-    }
+    client_state = false;
+    emit receiver_connectChanged();
 }
 
 void TcpConnect::client_disconnected()
 {
-    qDebug() << "Disconnect";
     client->deleteLater();
 }
 
 void TcpConnect::client_readySocket()
 {
+    qDebug() << "Client - read socket from server";
     client->flush();
     while (client->canReadLine()) {
         QByteArray data = client->readLine();

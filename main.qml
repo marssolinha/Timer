@@ -38,7 +38,7 @@ ApplicationWindow {
         property string local_addr: ""
 
         Component.onCompleted: {
-            if (!pin)
+            if (pin == 0 || pin === "")
                 pin = host.getPin();
         }
     }

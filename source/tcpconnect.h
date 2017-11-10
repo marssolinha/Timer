@@ -16,6 +16,7 @@ class TcpConnect : public QObject
     Q_OBJECT
     Q_PROPERTY(quint16 serviceType READ serviceType WRITE setServiceType NOTIFY serviceTypeChanged)
     Q_PROPERTY(QString addressController READ addressController WRITE setAddressController NOTIFY addressControllerChanged)
+    Q_PROPERTY(bool receiver_connect READ receiver_connect NOTIFY receiver_connectChanged)
 
 public:
     /**
@@ -33,6 +34,10 @@ Q_SIGNALS:
      * @brief addressControllerChanged
      */
     void addressControllerChanged();
+    /**
+     * @brief receiver_connectChanged
+     */
+    void receiver_connectChanged();
 
 public slots:
 
@@ -49,6 +54,10 @@ protected slots:
      * @brief client_connectController
      */
     void client_connectController();
+    /**
+     * @brief client_connectedController
+     */
+    void client_connectedController();
     /**
      * @brief client_disconnectController
      */
@@ -82,6 +91,10 @@ private slots:
      */
     void server_disconnectSocket();
     /**
+     * @brief server_disconnectAllSockets
+     */
+    void server_disconnectAllSockets();
+    /**
      * @brief client_readyRead
      */
     void client_readySocket();
@@ -112,7 +125,8 @@ private:
         CONTROLLER
     };
 
-    bool server_state;
+    bool server_state = false, client_state = false;
+    bool receiver_connect() { return client_state; }
 
     QString _addressController;
     QString addressController() { return _addressController; }

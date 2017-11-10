@@ -83,7 +83,7 @@ Dialog {
                                 anchors.fill: parent
 
                                 text: (settings.controller_addr === "")? qsTr("Nenhum controlador definido") :
-                                          (settings.controller_name)? settings.controller_name + " ("+ settings.controller_addr +")" : settings.controller_addr
+                                                                         (settings.controller_name)? settings.controller_name + " ("+ settings.controller_addr +")" : settings.controller_addr
                                 color: Material.foreground
                                 elide: Label.ElideRight
 
@@ -118,10 +118,10 @@ Dialog {
                     }
 
                     Button {
-                        text: qsTr("Conectar")
+                        text: tcp_connect.receiver_connect? qsTr("Desconectar") : qsTr("Conectar")
                         width: parent.width
-                        Material.background: Material.color(Material.Green, Material.Shade500)
-
+                        Material.background: tcp_connect.receiver_connect? Material.color(Material.Red, Material.Shade500) :
+                                                                           Material.color(Material.Green, Material.Shade500)
                         onClicked: validateFields();
                     }
                 }
@@ -219,26 +219,29 @@ Dialog {
 
     function validateFields()
     {
-        var validate = 0;
-        var _message = "";
+        if (tcp_connect.receiver_connect) {
+            tcp_connect.client_disconnectController();
+        } else {
+            var validate = 0;
+            var _message = "";
 
-        if (settings.controller_addr === "") {
-            ++validate;
-            _message += "* É necessário indicar um controlador<br/>";
+            if (settings.controller_addr === "") {
+                ++validate;
+                _message += "* É necessário indicar um controlador<br/>";
+            }
+            if (settings.controller_pin === "") {
+                ++validate;
+                _message += "* É necessário indicar o código PIN do controlador";
+            }
+
+            if (validate > 0) {
+                message._text = _message;
+                message.visible = true;
+                return;
+            }
+
+            tcp_connect.addressController  = settings.controller_addr;
+            tcp_connect.client_connectController();
         }
-        if (settings.controller_pin === "") {
-            ++validate;
-            _message += "* É necessário indicar o código PIN do controlador";
-        }
-
-        if (validate > 0) {
-            message._text = _message;
-            message.visible = true;
-            return;
-        }
-
-        tcp_connect.addressController  = settings.controller_addr;
-        tcp_connect.client_connectController();
-
     }
 }
