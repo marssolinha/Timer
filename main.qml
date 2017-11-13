@@ -8,6 +8,7 @@ import StatusBar 0.1
 import HostInfo 0.1
 import NetworkDiscovery 0.1
 import TcpConnect 0.1
+import Countdown 0.1
 
 import "./ui"
 
@@ -130,6 +131,10 @@ ApplicationWindow {
         id: dialogSettings
     }
 
+    Countdown {
+        id: countdown
+    }
+
     Timer {
         id: timer
         interval: 1000
@@ -172,6 +177,8 @@ ApplicationWindow {
 
     function completeZero(str, length)
     {
+        if (length === undefined)
+            length = 2;
         str = str.toString();
         while (str.length < length) {
             str = "0" + str;

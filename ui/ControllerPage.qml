@@ -52,6 +52,12 @@ Item {
                     text: object.timer_started? "\uE047" : "\uE037"
                     font.family: material_icon.name
                     font.pixelSize: Math.round(parent.height * 0.65)
+
+                    onClicked: {
+                        countdown.setTime(completeZero(define_timer.getHours) + ":" +
+                                          completeZero(define_timer.getMinutes) + ":" +
+                                          completeZero(define_timer.getSeconds));
+                    }
                 }
             }
 

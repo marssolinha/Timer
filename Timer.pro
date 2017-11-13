@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     source/statusbar.cpp \
     source/hostinfo.cpp \
     source/networkdiscovery.cpp \
-    source/tcpconnect.cpp
+    source/tcpconnect.cpp \
+    source/countdown.cpp
 
 RESOURCES += qml.qrc
 
@@ -36,7 +37,8 @@ HEADERS += \
     source/statusbar.h \
     source/hostinfo.h \
     source/networkdiscovery.h \
-    source/tcpconnect.h
+    source/tcpconnect.h \
+    source/countdown.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
