@@ -8,5 +8,8 @@
         <file>ui/DialogDeviceName.qml</file>
         <file>ui/DialogNetworkDiscovery.qml</file>
         <file>ui/DialogPinCode.qml</file>
+        <file>ui/ControllerPage.qml</file>
+        <file>ui/ReceiverPage.qml</file>
+        <file>ui/DialogSettings.qml</file>
     </qresource>
 </RCC>

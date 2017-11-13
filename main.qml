@@ -96,82 +96,18 @@ ApplicationWindow {
 
                     onClicked: dialogConnection.open();
                 }
-                ToolButton {
-                    Layout.fillHeight: true
-                    text: "\uE8B8"
-                    font.family: material_icon.name
-                    font.pixelSize: 28
-                }
             }
         }
     }
 
-    StackView {
-        anchors.fill: parent
+    ReceiverPage {
+        id: receiverPage
+        visible: settings.type == 0
+    }
 
-        initialItem: Item {
-            anchors.fill: parent
-
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 2
-
-                Item {
-                    Layout.alignment: object.timer_started? Qt.AlignLeft : Qt.AlignCenter
-                    Layout.fillHeight: !object.timer_started
-                    Layout.fillWidth: !object.timer_started
-                    width: 150
-                    height: 75
-
-                    TimerComponent {
-                        id: timer_prepare
-                        anchors.fill: parent
-
-                        MouseArea {
-                            enabled: object.timer_started
-                            anchors.fill: parent
-                        }
-                    }
-                }
-
-                Item {
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.fillHeight: object.timer_started
-                    Layout.fillWidth: object.timer_started
-                    width: parent.width
-                    height: 75
-
-                    TimerComponent {
-                        visible: object.timer_started
-                        id: counttimer
-                        anchors.fill: parent
-
-                        MouseArea {
-                            anchors.fill: parent
-                        }
-                    }
-                }
-
-                Item {
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.preferredWidth: parent.width
-                    Layout.preferredHeight: 100
-
-                    RoundButton {
-                        width: 90
-                        height: width
-
-                        anchors.centerIn: parent
-                        Material.background: Material.color((object.timer_started? Material.Red : Material.Green), Material.Shade500)
-                        text: object.timer_started? "\uE047" : "\uE037"
-                        font.family: material_icon.name
-                        font.pixelSize: Math.round(parent.height * 0.65)
-
-                        onClicked: object.timer_started? action("stop") : action("start");
-                    }
-                }
-            }
-        }
+    ControllerPage {
+        id: controllerPage
+        visible: settings.type == 1
     }
 
     DialogConnection {
@@ -188,6 +124,10 @@ ApplicationWindow {
 
     DialogNetworkDiscovery {
         id: dialogNetworkDiscovery
+    }
+
+    DialogSettings {
+        id: dialogSettings
     }
 
     Timer {

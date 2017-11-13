@@ -8,7 +8,7 @@ TcpConnect::TcpConnect(QObject *parent) : QObject(parent)
     connect(this, SIGNAL(serviceTypeChanged()), this, SLOT(interpreterService()));
     connect(server, SIGNAL(newConnection()), this, SLOT(server_incomingConnect()));
     connect(client, SIGNAL(connected()), this, SLOT(client_connectedController()));
-    connect(client, SIGNAL(readyRead()), this, SLOT(client_readySocket()));
+    connect(client, SIGNAL(readyRead()), this, SLOT(client_readSocket()));
 }
 
 void TcpConnect::setServiceType(quint16 _type)
@@ -60,14 +60,20 @@ void TcpConnect::server_stop()
 void TcpConnect::server_incomingConnect()
 {
     QTcpSocket *_client = server->nextPendingConnection();
-    connect(_client, SIGNAL(readyRead()), this, SLOT(server_readyRead()));
+    connect(_client, SIGNAL(readyRead()), this, SLOT(server_readSocket()));
     connect(_client, SIGNAL(disconnected()), this, SLOT(server_disconnectSocket()));
 
     qDebug() << "New connection" << _client->peerAddress().toString();
     clients.append(_client);
+
+    QJsonObject obj;
+    obj.insert("Type", "Controller");
+    QJsonArray array;
+    array.append(obj);
+    server_writeSocket(array);
 }
 
-void TcpConnect::server_readyRead()
+void TcpConnect::server_readSocket()
 {
     for (auto v_client : clients) {
         if (v_client->bytesAvailable()) {
@@ -78,10 +84,27 @@ void TcpConnect::server_readyRead()
 
             if (parseError.error == 0) {
                 for (const QJsonValue &json_object : doc_tcp.array()) {
-                    qDebug() << json_object.toObject();
+                    server_parseCommand(json_object.toObject());
                 }
             }
         }
+    }
+}
+
+void TcpConnect::server_parseCommand(const QJsonObject obj)
+{
+    for (const QString &key : obj.keys()) {
+
+    }
+}
+
+void TcpConnect::server_writeSocket(const QJsonArray data)
+{
+    QJsonDocument document(data);
+
+    for (auto v_client : clients) {
+        v_client->flush();
+        v_client->write(document.toJson(QJsonDocument::Compact));
     }
 }
 
@@ -125,6 +148,11 @@ void TcpConnect::client_connectedController()
 {
     client_state = true;
     emit receiver_connectChanged();
+    QJsonObject obj;
+    obj.insert("Type", "Receiver");
+    QJsonArray array;
+    array.append(obj);
+    client_writeSocket(array);
 }
 
 void TcpConnect::client_disconnectController()
@@ -140,7 +168,7 @@ void TcpConnect::client_disconnected()
     client->deleteLater();
 }
 
-void TcpConnect::client_readySocket()
+void TcpConnect::client_readSocket()
 {
     qDebug() << "Client - read socket from server";
     client->flush();
@@ -151,10 +179,25 @@ void TcpConnect::client_readySocket()
 
         if (parserError.error == 0) {
             for (const QJsonValue &json_object : doc_tcp.array()) {
-                qDebug() << json_object.toObject();
+                client_parseCommand(json_object.toObject());
             }
         }
     }
+}
+
+void TcpConnect::client_parseCommand(const QJsonObject obj)
+{
+    for (const QString &key : obj.keys()) {
+
+    }
+}
+
+void TcpConnect::client_writeSocket(const QJsonArray data)
+{
+    QJsonDocument document(data);
+
+    if (client->waitForConnected())
+        client->write(document.toJson(QJsonDocument::Compact));
 }
 
 void TcpConnect::setAddressController(QString address)

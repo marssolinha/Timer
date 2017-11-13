@@ -83,9 +83,17 @@ private slots:
      */
     void server_incomingConnect();
     /**
-     * @brief server_readyRead
+     * @brief server_readSocket
      */
-    void server_readyRead();
+    void server_readSocket();
+    /**
+     * @brief server_parseCommand
+     */
+    void server_parseCommand(const QJsonObject obj);
+    /**
+     * @brief server_writeSocket
+     */
+    void server_writeSocket(const QJsonArray data);
     /**
      * @brief server_disconnectSocket
      */
@@ -95,9 +103,17 @@ private slots:
      */
     void server_disconnectAllSockets();
     /**
-     * @brief client_readyRead
+     * @brief client_readSocket
      */
-    void client_readySocket();
+    void client_readSocket();
+    /**
+     * @brief client_parseCommand
+     */
+    void client_parseCommand(const QJsonObject obj);
+    /**
+     * @brief client_writeSocket
+     */
+    void client_writeSocket(const QJsonArray data);
 
     /**
      * @brief setAddressController

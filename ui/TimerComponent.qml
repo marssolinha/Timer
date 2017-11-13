@@ -8,6 +8,7 @@ Item {
 
     property int itemWidth: 0
     property int itemHeight: 0
+    property int textSize: 0
     property string textColor: Material.foreground
     property variant hours: []
     property variant minutes: []
@@ -30,8 +31,8 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: textColor
-            opacity: 1.0 - Math.abs(Tumbler.displacement);
-            font.pixelSize: Math.round((item.width /3) * 0.65);
+            opacity: 1.0 - Math.abs(Tumbler.displacement)
+            font.pixelSize: (textSize > 0)? textSize : Math.round((item.width /3) * 0.65)
             font.weight: Font.Light
 
             /*Behavior on font.pixelSize {
@@ -59,7 +60,7 @@ Item {
             height: parent.height
             text: ":"
             color: textColor
-            font.pixelSize: 42
+            font.pixelSize: (textSize > 0)? textSize : 42
             font.weight: Font.Light
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -78,7 +79,7 @@ Item {
             height: parent.height
             text: ":"
             color: textColor
-            font.pixelSize: 42
+            font.pixelSize: (textSize > 0)? textSize : 42
             font.weight: Font.Light
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -92,6 +93,7 @@ Item {
             delegate: component_text_delegate
         }
     }
+
     function completeZero(str, length) {
         str = str.toString();
         while (str.length < length) {
