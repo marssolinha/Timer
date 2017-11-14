@@ -5,6 +5,8 @@ import QtQuick.Controls.Material 2.2
 
 Item {
     id: item
+    property alias running_timer: running_timer
+
     anchors.fill: parent
 
     ColumnLayout {
@@ -16,6 +18,13 @@ Item {
 
             TimerComponent {
                 id: define_timer
+                visible: !countdown.status_timer
+                anchors.fill: parent
+            }
+
+            TimerComponent {
+                id: running_timer
+                visible: countdown.status_timer
                 anchors.fill: parent
             }
         }
@@ -37,6 +46,17 @@ Item {
             Item {
                 Layout.preferredHeight: 100
                 Layout.preferredWidth: 50
+
+                ToolButton {
+                    visible: object.timer_started
+                    Layout.fillHeight: true
+                    anchors.centerIn: parent
+                    text: "\uE047"
+                    font.family: material_icon.name
+                    font.pixelSize: 45
+
+                    onClicked: countdown.TimerStop()
+                }
             }
 
             Item {
@@ -48,15 +68,21 @@ Item {
                     height: width
 
                     anchors.centerIn: parent
-                    Material.background: Material.color((object.timer_started? Material.Red : Material.Green), Material.Shade500)
-                    text: object.timer_started? "\uE047" : "\uE037"
+                    Material.background: Material.color((object.timer_started? Material.Amber : Material.Green), Material.Shade500)
+                    text: object.timer_started? "\uE034" : "\uE037"
                     font.family: material_icon.name
                     font.pixelSize: Math.round(parent.height * 0.65)
 
                     onClicked: {
-                        countdown.setTime(completeZero(define_timer.getHours) + ":" +
-                                          completeZero(define_timer.getMinutes) + ":" +
-                                          completeZero(define_timer.getSeconds));
+                        if (object.timer_paused) {
+                            countdown.TimerResume();
+                        } else if (!object.timer_started) {
+                                countdown.setTimeString(completeZero(define_timer.getHours) + ":" +
+                                                          completeZero(define_timer.getMinutes) + ":" +
+                                                          completeZero(define_timer.getSeconds));
+                        } else {
+                            countdown.TimerPause();
+                        }
                     }
                 }
             }
@@ -70,7 +96,7 @@ Item {
                     anchors.centerIn: parent
                     text: "\uE8B8"
                     font.family: material_icon.name
-                    font.pixelSize: 24
+                    font.pixelSize: 30
 
                     onClicked: dialogSettings.open()
                 }

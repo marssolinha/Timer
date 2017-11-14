@@ -23,6 +23,7 @@ ApplicationWindow {
         id: object
 
         property bool timer_started: false
+        property bool timer_paused: false
         property int _time: 0
         property int _counttimer: 0
     }
@@ -133,6 +134,12 @@ ApplicationWindow {
 
     Countdown {
         id: countdown
+
+        onSecondsChanged: controllerPage.running_timer.setSeconds.currentIndex = seconds
+        onMinutesChanged: controllerPage.running_timer.setMinutes.currentIndex = minutes
+        onHoursChanged:  controllerPage.running_timer.setHours.currentIndex = hours
+        onStatus_timerChanged: object.timer_started = status_timer
+        onTimerPauseChanged: object.timer_paused = timerPause
     }
 
     Timer {
