@@ -5,6 +5,8 @@ import QtQuick.Controls.Material 2.2
 
 Item {
     id: item
+    property alias running_timer: running_timer
+
     anchors.fill: parent
 
     ColumnLayout {
@@ -15,7 +17,7 @@ Item {
             Layout.fillWidth: true
 
             TimerComponent {
-                id: timer_controller
+                id: running_timer
                 anchors.fill: parent
 
                 MouseArea {

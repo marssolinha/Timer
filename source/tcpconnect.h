@@ -17,6 +17,8 @@ class TcpConnect : public QObject
     Q_PROPERTY(quint16 serviceType READ serviceType WRITE setServiceType NOTIFY serviceTypeChanged)
     Q_PROPERTY(QString addressController READ addressController WRITE setAddressController NOTIFY addressControllerChanged)
     Q_PROPERTY(bool receiver_connect READ receiver_connect NOTIFY receiver_connectChanged)
+    Q_PROPERTY(QJsonObject receive_timer READ receive_timer NOTIFY receive_timerChanged)
+    Q_PROPERTY(QJsonObject receive_command READ receive_command NOTIFY receive_commandChanged)
 
 public:
     /**
@@ -38,8 +40,25 @@ Q_SIGNALS:
      * @brief receiver_connectChanged
      */
     void receiver_connectChanged();
+    /**
+     * @brief data_sendChanged
+     */
+    void data_sendChanged();
+    /**
+     * @brief receive_timerChanged
+     */
+    void receive_timerChanged();
+    /**
+     * @brief receiver_commandChanged
+     */
+    void receive_commandChanged();
 
 public slots:
+    /**
+     * @brief setData_send
+     * @param obj
+     */
+    void setData_send(QJsonObject obj);
 
 protected slots:
     /**
@@ -77,7 +96,6 @@ private slots:
      * @brief interpreterService
      */
     void interpreterService();
-
     /**
      * @brief server_incomingConnect
      */
@@ -114,7 +132,6 @@ private slots:
      * @brief client_writeSocket
      */
     void client_writeSocket(const QJsonArray data);
-
     /**
      * @brief setAddressController
      * @param address
@@ -146,6 +163,12 @@ private:
 
     QString _addressController;
     QString addressController() { return _addressController; }
+
+    QJsonObject m_receive_timer = {};
+    inline QJsonObject receive_timer() { return m_receive_timer; }
+
+    QJsonObject m_receive_command = {};
+    inline QJsonObject receive_command () { return m_receive_command; }
 };
 
 #endif // TCPCONNECT_H

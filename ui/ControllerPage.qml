@@ -55,7 +55,7 @@ Item {
                     font.family: material_icon.name
                     font.pixelSize: 45
 
-                    onClicked: countdown.TimerStop()
+                    onClicked: countdown.prepareStopTime()
                 }
             }
 
@@ -75,13 +75,13 @@ Item {
 
                     onClicked: {
                         if (object.timer_paused) {
-                            countdown.TimerResume();
+                            countdown.prepareResumeTime();
                         } else if (!object.timer_started) {
                                 countdown.setTimeString(completeZero(define_timer.getHours) + ":" +
                                                           completeZero(define_timer.getMinutes) + ":" +
                                                           completeZero(define_timer.getSeconds));
                         } else {
-                            countdown.TimerPause();
+                            countdown.preparePauseTime();
                         }
                     }
                 }

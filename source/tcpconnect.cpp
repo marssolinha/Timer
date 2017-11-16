@@ -34,7 +34,6 @@ void TcpConnect::interpreterService()
 /*
  * Controller functions
  */
-
 void TcpConnect::server_start()
 {
     server = new QTcpServer();
@@ -63,14 +62,8 @@ void TcpConnect::server_incomingConnect()
     connect(_client, SIGNAL(readyRead()), this, SLOT(server_readSocket()));
     connect(_client, SIGNAL(disconnected()), this, SLOT(server_disconnectSocket()));
 
-    qDebug() << "New connection" << _client->peerAddress().toString();
+    //qDebug() << "New connection" << _client->peerAddress().toString();
     clients.append(_client);
-
-    QJsonObject obj;
-    obj.insert("Type", "Controller");
-    QJsonArray array;
-    array.append(obj);
-    server_writeSocket(array);
 }
 
 void TcpConnect::server_readSocket()
@@ -101,11 +94,17 @@ void TcpConnect::server_parseCommand(const QJsonObject obj)
 void TcpConnect::server_writeSocket(const QJsonArray data)
 {
     QJsonDocument document(data);
-
     for (auto v_client : clients) {
         v_client->flush();
         v_client->write(document.toJson(QJsonDocument::Compact));
     }
+}
+
+void TcpConnect::setData_send(QJsonObject obj)
+{
+    QJsonArray array_send;
+    array_send.append(obj);
+    server_writeSocket(array_send);
 }
 
 void TcpConnect::server_disconnectSocket()
@@ -148,11 +147,6 @@ void TcpConnect::client_connectedController()
 {
     client_state = true;
     emit receiver_connectChanged();
-    QJsonObject obj;
-    obj.insert("Type", "Receiver");
-    QJsonArray array;
-    array.append(obj);
-    client_writeSocket(array);
 }
 
 void TcpConnect::client_disconnectController()
@@ -170,9 +164,8 @@ void TcpConnect::client_disconnected()
 
 void TcpConnect::client_readSocket()
 {
-    qDebug() << "Client - read socket from server";
     client->flush();
-    while (client->canReadLine()) {
+    while (client->bytesAvailable()) {
         QByteArray data = client->readLine();
         QJsonParseError parserError;
         QJsonDocument doc_tcp = QJsonDocument::fromJson(data, &parserError);
@@ -188,7 +181,14 @@ void TcpConnect::client_readSocket()
 void TcpConnect::client_parseCommand(const QJsonObject obj)
 {
     for (const QString &key : obj.keys()) {
-
+        if (key == "start") {
+            m_receive_timer = obj.value(key).toObject();
+            emit receive_timerChanged();
+        }
+        if (key == "action") {
+            m_receive_command = obj;
+            emit receive_commandChanged();
+        }
     }
 }
 

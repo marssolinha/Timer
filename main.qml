@@ -132,31 +132,6 @@ ApplicationWindow {
         id: dialogSettings
     }
 
-    Countdown {
-        id: countdown
-
-        onSecondsChanged: controllerPage.running_timer.setSeconds.currentIndex = seconds
-        onMinutesChanged: controllerPage.running_timer.setMinutes.currentIndex = minutes
-        onHoursChanged:  controllerPage.running_timer.setHours.currentIndex = hours
-        onStatus_timerChanged: object.timer_started = status_timer
-        onTimerPauseChanged: object.timer_paused = timerPause
-    }
-
-    Timer {
-        id: timer
-        interval: 1000
-        repeat: true
-        onTriggered: {
-            ++object._counttimer;
-            var str_time = new Date(object._counttimer * 1000);
-            counttimer.setHours.currentIndex = str_time.getUTCHours();
-            counttimer.setMinutes.currentIndex = str_time.getUTCMinutes();
-            counttimer.setSeconds.currentIndex = str_time.getUTCSeconds();
-
-            //if (object._counttimer > object._time)
-        }
-    }
-
     function action(_action)
     {
         if (_action === "start") {
@@ -243,23 +218,51 @@ ApplicationWindow {
         onPinChanged: settings.pin = getPin();
     }
 
+    Countdown {
+        id: countdown
+
+        onSecondsChanged: (settings.type == 0)? receiverPage.running_timer.setSeconds.currentIndex = seconds :
+                                                controllerPage.running_timer.setSeconds.currentIndex = seconds
+        onMinutesChanged: (settings.type == 0)? receiverPage.running_timer.setMinutes.currentIndex = minutes :
+                                                controllerPage.running_timer.setMinutes.currentIndex = minutes
+        onHoursChanged: (settings.type == 0)? controllerPage.running_timer.setMinutes.currentIndex = minutes :
+                                                controllerPage.running_timer.setMinutes.currentIndex = minutes
+        onStatus_timerChanged: object.timer_started = status_timer
+        onTimerPauseChanged: object.timer_paused = timerPause
+        onSend_timerChanged: tcp_connect.setData_send(send_timer)
+        onSend_commandChanged: tcp_connect.setData_send(send_command)
+    }
+
+    Timer {
+        id: timer
+        interval: 1000
+        repeat: true
+        onTriggered: {
+            ++object._counttimer;
+            var str_time = new Date(object._counttimer * 1000);
+            counttimer.setHours.currentIndex = str_time.getUTCHours();
+            counttimer.setMinutes.currentIndex = str_time.getUTCMinutes();
+            counttimer.setSeconds.currentIndex = str_time.getUTCSeconds();
+            //if (object._counttimer > object._time)
+        }
+    }
+
     NetworkDiscovery {
         id: networkDiscovery
         type: settings.type
         device: settings.local_name
-
-        //onControllerChanged: console.log(Object.keys(controller))
     }
 
     TcpConnect {
         id: tcp_connect
         serviceType: settings.type
         addressController: settings.controller_addr
+        onReceive_timerChanged: countdown.setTimeFromController(receive_timer)
+        onReceive_commandChanged: countdown.getCommand(receive_command)
     }
 
     Connections {
         target: settings
-        //onTypeChanged: console.log("Type change", settings.type);
     }
 
     StatusBar {
