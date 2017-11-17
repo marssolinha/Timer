@@ -5,6 +5,8 @@ import QtQuick.Controls.Material 2.2
 
 Dialog {
     id: dialog
+    property alias timer_alert: timer_alert
+
     title: qsTr("Configurações")
     width: window.width < 400? window.width : 400
     height: 250
@@ -26,7 +28,6 @@ Dialog {
             anchors.margins: 5
             spacing: 10
 
-
             Label {
                 Layout.fillWidth: true
                 text: qsTr("Tempo de alerta")
@@ -34,8 +35,9 @@ Dialog {
 
             TimerComponent {
                 id: timer_alert
+
                 itemWidth: parent.width
-                itemHeight: 40
+                itemHeight: 80
                 textSize: height
             }
 
@@ -43,5 +45,8 @@ Dialog {
                 Layout.fillHeight: true
             }
         }
+    }
+    onAccepted: {
+        settings.controller_alert = new Date("1970-01-01 "+completeZero(timer_alert.getHours)+":"+completeZero(timer_alert.getMinutes)+":"+completeZero(timer_alert.getSeconds)+" -0000").getTime() /1000;
     }
 }

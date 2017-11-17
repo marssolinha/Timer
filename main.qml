@@ -35,6 +35,7 @@ ApplicationWindow {
         property string controller_name: ""
         property string controller_addr: ""
         property string controller_pin: ""
+        property int controller_alert: 0
 
         property string local_name: ""
         property string local_addr: ""
@@ -43,6 +44,8 @@ ApplicationWindow {
             if (pin == 0 || pin === "")
                 pin = host.getPin();
         }
+
+        onController_alertChanged: countdown.timeToString(controller_alert);
     }
 
     header: Rectangle {
@@ -231,6 +234,10 @@ ApplicationWindow {
         onTimerPauseChanged: object.timer_paused = timerPause
         onSend_timerChanged: tcp_connect.setData_send(send_timer)
         onSend_commandChanged: tcp_connect.setData_send(send_command)
+
+        onConvertHoursChanged: dialogSettings.timer_alert.setHours.currentIndex = convertHours
+        onConvertMinutesChanged: dialogSettings.timer_alert.setMinutes.currentIndex = convertMinutes
+        onConvertSecondsChanged: dialogSettings.timer_alert.setSeconds.currentIndex = convertSeconds
     }
 
     Timer {

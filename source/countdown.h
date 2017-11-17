@@ -20,6 +20,9 @@ class Countdown : public QObject
     Q_PROPERTY(QString seconds READ seconds NOTIFY secondsChanged)
     Q_PROPERTY(QJsonObject send_timer READ send_timer NOTIFY send_timerChanged)
     Q_PROPERTY(QJsonObject send_command READ send_command NOTIFY send_commandChanged)
+    Q_PROPERTY(QString convertHours READ convertHours NOTIFY convertHoursChanged)
+    Q_PROPERTY(QString convertMinutes READ convertMinutes NOTIFY convertMinutesChanged)
+    Q_PROPERTY(QString convertSeconds READ convertSeconds NOTIFY convertSecondsChanged)
 
 public:
     explicit Countdown(QObject *parent = nullptr);
@@ -35,6 +38,10 @@ signals:
     void send_timerChanged();
     void send_commandChanged();
 
+    void convertHoursChanged();
+    void convertMinutesChanged();
+    void convertSecondsChanged();
+
 public slots:
     inline QString timeString() { return m_time_string; }
     inline quint32 time() { return m_time; }
@@ -46,6 +53,8 @@ public slots:
     void preparePauseTime();
     void prepareResumeTime();
     void getCommand(QJsonObject get_command);
+    inline int stringToTime(QString get_string_time) { return QDateTime::fromString(QString("1970-01-01 %1 -00").arg(get_string_time), Qt::ISODate).toTime_t(); }
+    void timeToString(quint32 get_time);
 
 private slots:
     void Timer();
@@ -71,8 +80,12 @@ private:
 
     QTimer *timer;
     quint32 m_timer = 0, m_timer_start = 0, m_time_end = 0;
-
     QJsonObject m_object_time, m_object_command;
+
+    QString m_convert_hours = "00", m_convert_minutes = "00", m_convert_seconds = "00";
+    inline QString convertHours() { return m_convert_hours; }
+    inline QString convertMinutes() { return m_convert_minutes; }
+    inline QString convertSeconds() { return m_convert_seconds; }
 };
 
 #endif // TIMER_H

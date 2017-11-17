@@ -72,6 +72,19 @@ void Countdown::getCommand(QJsonObject get_command)
         TimerResume();
 }
 
+void Countdown::timeToString(quint32 get_time)
+{
+    m_convert_hours = QDateTime::fromTime_t(get_time).toUTC().toString("hh");
+    m_convert_minutes = QDateTime::fromTime_t(get_time).toUTC().toString("mm");
+    m_convert_seconds = QDateTime::fromTime_t(get_time).toUTC().toString("ss");
+
+    qDebug() << m_convert_hours << m_convert_minutes << m_convert_seconds;
+
+    emit convertHoursChanged();
+    emit convertMinutesChanged();
+    emit convertSecondsChanged();
+}
+
 void Countdown::Timer()
 {
     /*if (m_timer >= m_time) {
