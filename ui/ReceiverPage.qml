@@ -28,12 +28,12 @@ Item {
 
             SequentialAnimation on color {
                 running: object.alert
-                ColorAnimation { to: object.alert_color; duration: (settings.controller_alert * 1000 * 0.75) }
+                ColorAnimation { to: object.alert_color; duration: (countdown.time_alert * 1000 * 0.6) }
             }
 
             SequentialAnimation on color {
                 running: !object.alert
-                ColorAnimation { to: "transparent"; duration: 5000 }
+                ColorAnimation { to: "transparent"; duration: 4000 }
             }
         }
     }

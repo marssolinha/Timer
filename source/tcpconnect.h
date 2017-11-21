@@ -19,6 +19,7 @@ class TcpConnect : public QObject
     Q_PROPERTY(bool receiver_connect READ receiver_connect NOTIFY receiver_connectChanged)
     Q_PROPERTY(QJsonObject receive_timer READ receive_timer NOTIFY receive_timerChanged)
     Q_PROPERTY(QJsonObject receive_command READ receive_command NOTIFY receive_commandChanged)
+    Q_PROPERTY(qint32 devices READ devices NOTIFY devicesChanged)
 
 public:
     /**
@@ -52,6 +53,10 @@ Q_SIGNALS:
      * @brief receiver_commandChanged
      */
     void receive_commandChanged();
+    /**
+     * @brief devicesChanged
+     */
+    void devicesChanged();
 
 public slots:
     /**
@@ -169,6 +174,8 @@ private:
 
     QJsonObject m_receive_command = {};
     inline QJsonObject receive_command () { return m_receive_command; }
+
+    qint32 devices() { return clients.size(); }
 };
 
 #endif // TCPCONNECT_H

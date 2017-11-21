@@ -64,6 +64,7 @@ void TcpConnect::server_incomingConnect()
 
     //qDebug() << "New connection" << _client->peerAddress().toString();
     clients.append(_client);
+    emit devicesChanged();
 }
 
 void TcpConnect::server_readSocket()

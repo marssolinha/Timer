@@ -22,7 +22,8 @@ void Countdown::setTimeFromController(QJsonObject get_timer)
     m_time_start = get_timer.value("time_start").toInt();
     m_time_end = get_timer.value("time_end").toInt();
     m_time_alert = get_timer.value("time_alert").toInt();
-    timeChanged();
+    emit timeChanged();
+    emit time_alertChanged();
 }
 
 void Countdown::setTime_alert(qint32 quint_time)

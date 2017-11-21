@@ -214,6 +214,13 @@ Dialog {
                     }
                 }
             }
+
+            ItemDelegate {
+                visible: device_type.currentIndex == 1
+                width: parent.width
+
+                text: qsTr("Dispositivos conectados: ") + tcp_connect.devices
+            }
         }
     }
 

@@ -277,6 +277,6 @@ ApplicationWindow {
     }
 
     StatusBar {
-        color: Material.background
+        color: "#222"
     }
 }

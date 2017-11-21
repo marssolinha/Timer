@@ -31,11 +31,15 @@ Item {
                 id: running_timer
                 visible: countdown.status_timer
                 anchors.fill: parent
+
+                MouseArea {
+                    anchors.fill: parent
+                }
             }
 
             SequentialAnimation on color {
                 running: object.alert
-                ColorAnimation { to: object.alert_color; duration: (settings.controller_alert * 1000 * 0.75) }
+                ColorAnimation { to: object.alert_color; duration: (settings.controller_alert * 1000 * 0.6) }
             }
 
             SequentialAnimation on color {
