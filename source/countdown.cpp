@@ -21,7 +21,14 @@ void Countdown::setTimeFromController(QJsonObject get_timer)
     //m_time_start = QDateTime::currentDateTime().toTime_t();
     m_time_start = get_timer.value("time_start").toInt();
     m_time_end = get_timer.value("time_end").toInt();
+    m_time_alert = get_timer.value("time_alert").toInt();
     timeChanged();
+}
+
+void Countdown::setTime_alert(qint32 quint_time)
+{
+    m_time_alert = quint_time;
+    emit time_alertChanged();
 }
 
 void Countdown::prepareStartTime()
@@ -31,6 +38,7 @@ void Countdown::prepareStartTime()
     m_object_time.insert("time", (int) m_time);
     m_object_time.insert("time_start", (int) m_time_start);
     m_object_time.insert("time_end", (int) m_time_end);
+    m_object_time.insert("time_alert", (int) m_time_alert);
     obj.insert("start", m_object_time);
     m_object_time = obj;
 
@@ -72,13 +80,11 @@ void Countdown::getCommand(QJsonObject get_command)
         TimerResume();
 }
 
-void Countdown::timeToString(quint32 get_time)
+void Countdown::timeToString(qint32 get_time)
 {
     m_convert_hours = QDateTime::fromTime_t(get_time).toUTC().toString("hh");
     m_convert_minutes = QDateTime::fromTime_t(get_time).toUTC().toString("mm");
     m_convert_seconds = QDateTime::fromTime_t(get_time).toUTC().toString("ss");
-
-    qDebug() << m_convert_hours << m_convert_minutes << m_convert_seconds;
 
     emit convertHoursChanged();
     emit convertMinutesChanged();
@@ -87,11 +93,11 @@ void Countdown::timeToString(quint32 get_time)
 
 void Countdown::Timer()
 {
-    /*if (m_timer >= m_time) {
-        TimerStop();
-        return;
-    }*/
     m_timer = m_time - (m_time_end - QDateTime::currentDateTime().toTime_t());
+    if ((m_time - m_timer) < m_time_alert) {
+        m_alert = true;
+        emit alertChanged();
+    }
 
     emit hoursChanged();
     emit minutesChanged();
@@ -112,7 +118,9 @@ void Countdown::TimerStop()
     m_time = 0;
     m_status_timer = false;
     m_timer_pause = false;
+    m_alert = false;
 
+    emit alertChanged();
     emit timerPauseChanged();
     emit status_timerChanged();
     emit hoursChanged();

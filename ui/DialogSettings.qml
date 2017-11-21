@@ -9,7 +9,7 @@ Dialog {
 
     title: qsTr("Configurações")
     width: window.width < 400? window.width : 400
-    height: 250
+    height: 260
 
     modal: true
     x: (window.width - width) /2
@@ -30,6 +30,7 @@ Dialog {
 
             Label {
                 Layout.fillWidth: true
+                font.bold: true
                 text: qsTr("Tempo de alerta")
             }
 
@@ -43,6 +44,20 @@ Dialog {
 
             Item {
                 Layout.fillHeight: true
+            }
+
+            RowLayout {
+                visible: settings.controller_alert > 0
+                Layout.fillWidth: true
+
+                Label {
+                    text: qsTr("Alerta definido")
+                    font.bold: true
+                }
+
+                Label {
+                    text: countdown.convertHours + ":" + countdown.convertMinutes + ":" + countdown.convertSeconds
+                }
             }
         }
     }

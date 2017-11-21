@@ -26,7 +26,14 @@ ApplicationWindow {
         property bool timer_paused: false
         property int _time: 0
         property int _counttimer: 0
+        property bool alert: countdown.alert
+        property color alert_color: Material.color(Material.Red, Material.Shade900)
+        property color border_up: "#101010"
+        property color border_down: "#2f2f2f"
     }
+
+    Material.accent: Material.color(Material.Red, Material.Shade500)
+    Material.background: "#222"
 
     Settings {
         id: settings
@@ -57,14 +64,14 @@ ApplicationWindow {
         Rectangle {
             width: parent.width
             height: 1
-            color: "#292929"
+            color: object.border_up
             anchors.bottom: row_bottom.top
         }
         Rectangle {
             id: row_bottom
             width: parent.width
             height: 1
-            color: "#333"
+            color: object.border_down
             anchors.bottom: parent.bottom
         }
 
@@ -73,7 +80,7 @@ ApplicationWindow {
 
             Label {
                 text: "\uE425"
-                color: Material.color(Material.DeepOrange, Material.Shade500)
+                color: Material.accent
                 font.family: material_icon.name
                 font.pixelSize: 32
                 Layout.leftMargin: 10
@@ -83,7 +90,7 @@ ApplicationWindow {
 
             Label {
                 text: qsTr("Timer")
-                color: Material.color(Material.DeepOrange, Material.Shade500)
+                color: Material.accent
                 font.pixelSize: 24
                 font.weight: Font.Light
                 Layout.fillWidth: true
@@ -223,6 +230,7 @@ ApplicationWindow {
 
     Countdown {
         id: countdown
+        time_alert: settings.controller_alert
 
         onSecondsChanged: (settings.type == 0)? receiverPage.running_timer.setSeconds.currentIndex = seconds :
                                                 controllerPage.running_timer.setSeconds.currentIndex = seconds
@@ -234,10 +242,6 @@ ApplicationWindow {
         onTimerPauseChanged: object.timer_paused = timerPause
         onSend_timerChanged: tcp_connect.setData_send(send_timer)
         onSend_commandChanged: tcp_connect.setData_send(send_command)
-
-        onConvertHoursChanged: dialogSettings.timer_alert.setHours.currentIndex = convertHours
-        onConvertMinutesChanged: dialogSettings.timer_alert.setMinutes.currentIndex = convertMinutes
-        onConvertSecondsChanged: dialogSettings.timer_alert.setSeconds.currentIndex = convertSeconds
     }
 
     Timer {

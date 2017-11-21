@@ -11,8 +11,13 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent;
+        spacing: 0
 
-        Item {
+        Rectangle {
+            id: rectangle_timer
+            //color: Material.color(Material.DeepOrange, Material.Shade500)
+            //color: object.alert? object.alert_color : "transparent";
+            color: "transparent"
             Layout.fillHeight: true
             Layout.fillWidth: true
 
@@ -27,17 +32,31 @@ Item {
                 visible: countdown.status_timer
                 anchors.fill: parent
             }
+
+            SequentialAnimation on color {
+                running: object.alert
+                ColorAnimation { to: object.alert_color; duration: (settings.controller_alert * 1000 * 0.75) }
+            }
+
+            SequentialAnimation on color {
+                running: !object.alert
+                ColorAnimation { to: "transparent"; duration: 5000 }
+            }
         }
 
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: "#292929"
+            color: object.border_up
+        }
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 3
         }
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: "#333"
+            color: object.border_down
         }
 
         RowLayout {
@@ -69,6 +88,7 @@ Item {
 
                     anchors.centerIn: parent
                     Material.background: Material.color((object.timer_started? Material.Amber : Material.Green), Material.Shade500)
+                    Material.elevation: 10
                     text: object.timer_started? "\uE034" : "\uE037"
                     font.family: material_icon.name
                     font.pixelSize: Math.round(parent.height * 0.65)
@@ -77,9 +97,9 @@ Item {
                         if (object.timer_paused) {
                             countdown.prepareResumeTime();
                         } else if (!object.timer_started) {
-                                countdown.setTimeString(completeZero(define_timer.getHours) + ":" +
-                                                          completeZero(define_timer.getMinutes) + ":" +
-                                                          completeZero(define_timer.getSeconds));
+                            countdown.setTimeString(completeZero(define_timer.getHours) + ":" +
+                                                    completeZero(define_timer.getMinutes) + ":" +
+                                                    completeZero(define_timer.getSeconds));
                         } else {
                             countdown.preparePauseTime();
                         }

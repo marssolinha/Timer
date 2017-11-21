@@ -12,7 +12,8 @@ Item {
     ColumnLayout {
         anchors.fill: parent
 
-        Item {
+        Rectangle {
+            color: "transparent"
             Layout.fillHeight: true
             Layout.fillWidth: true
 
@@ -23,6 +24,16 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                 }
+            }
+
+            SequentialAnimation on color {
+                running: object.alert
+                ColorAnimation { to: object.alert_color; duration: (settings.controller_alert * 1000 * 0.75) }
+            }
+
+            SequentialAnimation on color {
+                running: !object.alert
+                ColorAnimation { to: "transparent"; duration: 5000 }
             }
         }
     }
