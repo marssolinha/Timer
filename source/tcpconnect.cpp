@@ -65,6 +65,7 @@ void TcpConnect::server_incomingConnect()
     //qDebug() << "New connection" << _client->peerAddress().toString();
     clients.append(_client);
     emit devicesChanged();
+    emit list_devicesChanged();
 }
 
 void TcpConnect::server_readSocket()
@@ -120,6 +121,8 @@ void TcpConnect::server_disconnectSocket()
         }
         ++i;
     }
+    emit devicesChanged();
+    emit list_devicesChanged();
 }
 
 void TcpConnect::server_disconnectAllSockets()
@@ -132,6 +135,8 @@ void TcpConnect::server_disconnectAllSockets()
         }
     }
     clients.clear();
+    emit devicesChanged();
+    emit list_devicesChanged();
 }
 
 /*
@@ -205,4 +210,13 @@ void TcpConnect::setAddressController(QString address)
 {
     _addressController = address;
     emit addressControllerChanged();
+}
+
+QVariantMap TcpConnect::list_devices()
+{
+    QJsonObject obj;
+    for (const auto &v_client : clients) {
+        obj.insert("ip", v_client->peerAddress().toString());
+    }
+    return obj.toVariantMap();
 }

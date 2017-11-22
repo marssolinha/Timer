@@ -81,15 +81,12 @@ Dialog {
 
                             Label {
                                 anchors.fill: parent
-
                                 text: (settings.controller_addr === "")? qsTr("Nenhum controlador definido") :
                                                                          (settings.controller_name)? settings.controller_name + " ("+ settings.controller_addr +")" : settings.controller_addr
                                 color: Material.foreground
                                 elide: Label.ElideRight
-
                                 verticalAlignment: Label.AlignVCenter
                             }
-
                             onClicked: dialogNetworkDiscovery.open()
                         }
                     }
@@ -220,6 +217,7 @@ Dialog {
                 width: parent.width
 
                 text: qsTr("Dispositivos conectados: ") + tcp_connect.devices
+                onClicked: dialogDevicesConnected.open()
             }
         }
     }

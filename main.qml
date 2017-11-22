@@ -142,6 +142,10 @@ ApplicationWindow {
         id: dialogSettings
     }
 
+    DialogDevicesConnected {
+        id: dialogDevicesConnected
+    }
+
     function action(_action)
     {
         if (_action === "start") {
