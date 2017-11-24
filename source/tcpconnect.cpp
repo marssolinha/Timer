@@ -109,9 +109,21 @@ void TcpConnect::setData_send(QJsonObject obj)
     server_writeSocket(array_send);
 }
 
+void TcpConnect::server_disconnectClient(qint32 index)
+{
+    qint32 i = 0;
+    for (auto v_client : clients) {
+        if (v_client->state() == QTcpSocket::ConnectedState && i == index) {
+            v_client->close();
+            clients.removeAt(i);
+        }
+        ++i;
+    }
+}
+
 void TcpConnect::server_disconnectSocket()
 {
-    int i = 0;
+    qint32 i = 0;
     for (auto v_client : clients) {
         if (v_client->state() != QTcpSocket::ConnectedState) {
             qDebug() << "Disconnect" << v_client->peerAddress().toString();
@@ -212,11 +224,15 @@ void TcpConnect::setAddressController(QString address)
     emit addressControllerChanged();
 }
 
-QVariantMap TcpConnect::list_devices()
+QList<QVariant> TcpConnect::list_devices()
 {
-    QJsonObject obj;
+    m_list_devices.clear();
     for (const auto &v_client : clients) {
-        obj.insert("ip", v_client->peerAddress().toString());
+        QJsonObject obj;
+        obj.insert("ip", v_client->localAddress().toString());
+        m_list_devices.append(obj.toVariantMap());
     }
-    return obj.toVariantMap();
+    return m_list_devices;
 }
+
+

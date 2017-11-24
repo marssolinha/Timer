@@ -36,8 +36,10 @@ Dialog {
                 model: tcp_connect.list_devices
                 delegate: ItemDelegate {
                     width: parent.width
-                    height: parent.height
-                    text: qsTr("Teste")
+                    height: 35
+                    text: modelData.ip
+
+                    onPressAndHold: tcp_connect.server_disconnectClient(index);
                 }
             }
 
