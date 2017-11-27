@@ -1,25 +1,31 @@
 #include "countdown.h"
 
 Countdown::Countdown(QObject *parent) :
-    QObject(parent), timer(new QTimer())
+    QObject(parent), timer(new QTimer()), realtime(new QTimer())
 {
     connect(this, SIGNAL(timeChanged()), this, SLOT(TimerStart()));
     connect(timer, SIGNAL(timeout()), this, SLOT(Timer()));
+    connect(realtime, SIGNAL(timeout()), this, SLOT(realtTime()));
+    realtime->start(15);
 }
 
 void Countdown::setTimeString(QString get_time)
 {
     m_time = QDateTime::fromString(QString("1970-01-01 %1 -00").arg(get_time), Qt::ISODate).toTime_t();
-    m_time_start = QDateTime::currentDateTime().toTime_t();
+    m_time_start = QDateTime::currentDateTimeUtc().toTime_t();
     m_time_end = m_time + m_time_start;
+    timer->setInterval(100);
     prepareStartTime();
 }
 
 void Countdown::setTimeFromController(QJsonObject get_timer)
 {
+    qint32 current_time = QDateTime::currentDateTimeUtc().toTime_t();
+    qint32 time_start =  get_timer.value("time_start").toInt();
+    m_diff = time_start - current_time;
+
     m_time = get_timer.value("time").toInt();
-    //m_time_start = QDateTime::currentDateTime().toTime_t();
-    m_time_start = get_timer.value("time_start").toInt();
+    m_time_start = time_start;
     m_time_end = get_timer.value("time_end").toInt();
     m_time_alert = get_timer.value("time_alert").toInt();
     emit timeChanged();
@@ -43,15 +49,15 @@ void Countdown::prepareStartTime()
     obj.insert("start", m_object_time);
     m_object_time = obj;
 
-    send_timerChanged();
-    timeChanged();
+    emit send_timerChanged();
+    emit timeChanged();
 }
 
 void Countdown::prepareStopTime()
 {
     m_object_command = {};
     m_object_command.insert("action", "stop");
-    send_commandChanged();
+    emit send_commandChanged();
     TimerStop();
 }
 
@@ -59,7 +65,7 @@ void Countdown::preparePauseTime()
 {
     m_object_command = {};
     m_object_command.insert("action", "pause");
-    send_commandChanged();
+    emit send_commandChanged();
     TimerPause();
 }
 
@@ -67,7 +73,7 @@ void Countdown::prepareResumeTime()
 {
     m_object_command = {};
     m_object_command.insert("action", "resume");
-    send_commandChanged();
+    emit send_commandChanged();
     TimerResume();
 }
 
@@ -94,7 +100,7 @@ void Countdown::timeToString(qint32 get_time)
 
 void Countdown::Timer()
 {
-    m_timer = m_time - (m_time_end - QDateTime::currentDateTime().toTime_t());
+    m_timer = m_time - (m_time_end - QDateTime::currentDateTime().toTime_t() - m_diff);
     if ((m_time - m_timer) < m_time_alert) {
         m_alert = true;
         emit alertChanged();
@@ -107,7 +113,7 @@ void Countdown::Timer()
 
 void Countdown::TimerStart()
 {
-    timer->start(999);
+    timer->start();
     m_status_timer = true;
     status_timerChanged();
 }
@@ -141,4 +147,10 @@ void Countdown::TimerResume()
     TimerStart();
     m_timer_pause = false;
     emit timerPauseChanged();
+}
+
+void Countdown::realtTime()
+{
+    m_real_time = QDateTime::currentDateTimeUtc().toString("dd/MM/yyyy hh:mm:ss:zzz");
+    emit getRealTimeChanged();
 }

@@ -98,6 +98,7 @@ ApplicationWindow {
             }
 
             RowLayout {
+                visible: !object.timer_started
                 Layout.fillHeight: true
 
                 ToolButton {
@@ -120,6 +121,20 @@ ApplicationWindow {
     ControllerPage {
         id: controllerPage
         visible: settings.type == 1
+    }
+
+    Rectangle {
+        width: parent.width
+        height: 25
+        color: "transparent"
+
+        Label {
+            anchors.fill: parent
+            horizontalAlignment: Label.AlignHCenter
+            verticalAlignment: Label.AlignVCenter
+            text: qsTr("Tempo real: ") + countdown.getRealTime
+            font.pixelSize: 10
+        }
     }
 
     DialogConnection {

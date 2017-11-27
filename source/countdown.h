@@ -25,6 +25,7 @@ class Countdown : public QObject
     Q_PROPERTY(QString convertHours READ convertHours NOTIFY convertHoursChanged)
     Q_PROPERTY(QString convertMinutes READ convertMinutes NOTIFY convertMinutesChanged)
     Q_PROPERTY(QString convertSeconds READ convertSeconds NOTIFY convertSecondsChanged)
+    Q_PROPERTY(QString getRealTime READ getRealTime NOTIFY getRealTimeChanged)
 
 public:
     explicit Countdown(QObject *parent = nullptr);
@@ -45,6 +46,7 @@ signals:
     void convertHoursChanged();
     void convertMinutesChanged();
     void convertSecondsChanged();
+    void getRealTimeChanged();
 
 public slots:
     inline QString timeString() { return m_time_string; }
@@ -68,6 +70,7 @@ private slots:
     void TimerStop();
     void TimerPause();
     void TimerResume();
+    void realtTime();
 
 private:
     QString m_time_string;
@@ -87,14 +90,17 @@ private:
     inline QJsonObject send_timer() { return m_object_time; }
     inline QJsonObject send_command() { return m_object_command; }
 
-    QTimer *timer;
-    qint32 m_timer = 0, m_timer_start = 0, m_time_end = 0;
+    QTimer *timer, *realtime;
+    qint32 m_timer = 0, m_timer_start = 0, m_time_end = 0, m_diff = 0;
     QJsonObject m_object_time, m_object_command;
 
     QString m_convert_hours = "00", m_convert_minutes = "00", m_convert_seconds = "00";
     inline QString convertHours() { return m_convert_hours; }
     inline QString convertMinutes() { return m_convert_minutes; }
     inline QString convertSeconds() { return m_convert_seconds; }
+
+    QString m_real_time;
+    inline QString getRealTime() { return m_real_time; }
 };
 
 #endif // TIMER_H
