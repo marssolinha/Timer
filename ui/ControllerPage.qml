@@ -6,6 +6,7 @@ import QtQuick.Controls.Material 2.2
 Item {
     id: item
     property alias running_timer: running_timer
+    property alias define_timer: define_timer
 
     anchors.fill: parent
 
@@ -48,7 +49,7 @@ Item {
             }
         }
 
-        Rectangle {
+        /*Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
             color: object.border_up
@@ -61,71 +62,8 @@ Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
             color: object.border_down
-        }
+        }*/
 
-        RowLayout {
-            Layout.fillWidth: true
 
-            Item {
-                Layout.preferredHeight: 100
-                Layout.preferredWidth: 50
-
-                ToolButton {
-                    visible: object.timer_started
-                    Layout.fillHeight: true
-                    anchors.centerIn: parent
-                    text: "\uE047"
-                    font.family: material_icon.name
-                    font.pixelSize: 45
-
-                    onClicked: countdown.prepareStopTime()
-                }
-            }
-
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 100
-
-                RoundButton {
-                    width: 90
-                    height: width
-
-                    anchors.centerIn: parent
-                    Material.background: Material.color((object.timer_started? Material.Amber : Material.Green), Material.Shade500)
-                    Material.elevation: 10
-                    text: object.timer_started? "\uE034" : "\uE037"
-                    font.family: material_icon.name
-                    font.pixelSize: Math.round(parent.height * 0.65)
-
-                    onClicked: {
-                        if (object.timer_paused) {
-                            countdown.prepareResumeTime();
-                        } else if (!object.timer_started) {
-                            countdown.setTimeString(completeZero(define_timer.getHours) + ":" +
-                                                    completeZero(define_timer.getMinutes) + ":" +
-                                                    completeZero(define_timer.getSeconds));
-                        } else {
-                            countdown.preparePauseTime();
-                        }
-                    }
-                }
-            }
-
-            Item {
-                Layout.preferredHeight: 100
-                Layout.preferredWidth: 50
-
-                ToolButton {
-                    enabled: !object.timer_started
-                    Layout.fillHeight: true
-                    anchors.centerIn: parent
-                    text: "\uE8B8"
-                    font.family: material_icon.name
-                    font.pixelSize: 30
-
-                    onClicked: dialogSettings.open()
-                }
-            }
-        }
     }
 }

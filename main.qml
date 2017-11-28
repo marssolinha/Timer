@@ -34,7 +34,7 @@ ApplicationWindow {
         property color border_down: "#2f2f2f"
     }
 
-    Material.accent: Material.color(Material.Red, Material.Shade600)
+    Material.accent: Material.color(Material.Red, Material.Shade500)
     Material.background: "#222222"
 
     Settings {
@@ -95,6 +95,78 @@ ApplicationWindow {
                         dialogConnection.open();
                         statusBar.theme = StatusBar.Dark
                     }
+                }
+            }
+        }
+    }
+
+    footer: ToolBar {
+        enabled: settings.type === 1
+        visible: settings.type === 1
+        height: 100
+        Material.background: Material.background
+
+        RowLayout {
+            anchors.fill: parent
+
+            Item {
+                Layout.fillHeight: true
+                Layout.preferredWidth: 50
+
+                ToolButton {
+                    visible: object.timer_started
+                    Layout.fillHeight: true
+                    anchors.centerIn: parent
+                    text: "\uE047"
+                    font.family: material_icon.name
+                    font.pixelSize: 45
+
+                    onClicked: countdown.prepareStopTime()
+                }
+            }
+
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 100
+
+                RoundButton {
+                    width: 90
+                    height: width
+
+                    anchors.centerIn: parent
+                    Material.background: Material.color((object.timer_started? Material.Amber : Material.Green), Material.Shade500)
+                    Material.elevation: 10
+                    text: object.timer_started? "\uE034" : "\uE037"
+                    font.family: material_icon.name
+                    font.pixelSize: Math.round(parent.height * 0.65)
+
+                    onClicked: {
+                        if (object.timer_paused) {
+                            countdown.prepareResumeTime();
+                        } else if (!object.timer_started) {
+                            countdown.setTimeString(completeZero(controllerPage.define_timer.getHours) + ":" +
+                                                    completeZero(controllerPage.define_timer.getMinutes) + ":" +
+                                                    completeZero(controllerPage.define_timer.getSeconds));
+                        } else {
+                            countdown.preparePauseTime();
+                        }
+                    }
+                }
+            }
+
+            Item {
+                Layout.preferredHeight: 100
+                Layout.preferredWidth: 50
+
+                ToolButton {
+                    enabled: !object.timer_started
+                    Layout.fillHeight: true
+                    anchors.centerIn: parent
+                    text: "\uE8B8"
+                    font.family: material_icon.name
+                    font.pixelSize: 30
+
+                    onClicked: dialogSettings.open()
                 }
             }
         }
