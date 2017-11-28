@@ -116,7 +116,7 @@ Item {
                 Layout.preferredWidth: 50
 
                 ToolButton {
-                    visible: !object.timer_started
+                    enabled: !object.timer_started
                     Layout.fillHeight: true
                     anchors.centerIn: parent
                     text: "\uE8B8"

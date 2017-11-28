@@ -20,6 +20,19 @@ SOURCES += main.cpp \
     source/countdown.cpp \
     source/statusbar/statusbar.cpp
 
+android {
+    QT += androidextras
+    SOURCES += source/statusbar/statusbar_android.cpp
+    DISTFILES += \
+        android/AndroidManifest.xml \
+        android/res/values/libs.xml
+} else:ios {
+    LIBS += -framework UIKit
+    OBJECTIVE_SOURCES += source/statusbar/statusbar_ios.mm
+} else {
+    SOURCES += source/statusbar/statusbar_dummy.cpp
+}
+
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -33,28 +46,11 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-android {
-    QT += androidextras
-    SOURCES += \
-        source/statusbar/statusbar_android.cpp
-    DISTFILES += \
-        android/AndroidManifest.xml \
-        android/res/values/libs.xml
-} else:ios {
-    LIBS += -framework UIKit
-    OBJECTIVE_SOURCES += \
-        source/statusbar/statusbar_ios.mm
-} else {
-    SOURCES += \
-        source/statusbar/statusbar_dummy.cpp
-}
-
 HEADERS += \
     source/hostinfo.h \
     source/networkdiscovery.h \
     source/tcpconnect.h \
     source/countdown.h \
-    source/statusbar/statusbar.h \
-    source/statusbar/statusbar_p.h
+    source/statusbar/statusbar.h
 
 

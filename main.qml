@@ -1,4 +1,5 @@
 import QtQuick 2.9
+import QtQuick.Window 2.2
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Material 2.2
@@ -18,6 +19,7 @@ ApplicationWindow {
     width: 380
     height: 500
     title: qsTr("Timer")
+    flags: Qt.Window | Qt.MaximizeUsingFullscreenGeometryHint
 
     QtObject {
         id: object
@@ -32,8 +34,8 @@ ApplicationWindow {
         property color border_down: "#2f2f2f"
     }
 
-    Material.accent: Material.color(Material.Red, Material.Shade500)
-    Material.background: "#222"
+    Material.accent: Material.color(Material.Red, Material.Shade600)
+    Material.background: "#222222"
 
     Settings {
         id: settings
@@ -55,32 +57,15 @@ ApplicationWindow {
         onController_alertChanged: countdown.timeToString(controller_alert);
     }
 
-    header: Rectangle {
-        width: parent.width
-        height: 50
-
-        color: Material.background
-
-        Rectangle {
-            width: parent.width
-            height: 1
-            color: object.border_up
-            anchors.bottom: row_bottom.top
-        }
-        Rectangle {
-            id: row_bottom
-            width: parent.width
-            height: 1
-            color: object.border_down
-            anchors.bottom: parent.bottom
-        }
+    header: ToolBar {
+        Material.primary: object.alert_color
+        topPadding: Qt.platform.os === "ios" ? Screen.height - Screen.desktopAvailableHeight : 0
 
         RowLayout {
             anchors.fill: parent
 
             Label {
                 text: "\uE425"
-                color: Material.accent
                 font.family: material_icon.name
                 font.pixelSize: 32
                 Layout.leftMargin: 10
@@ -90,7 +75,6 @@ ApplicationWindow {
 
             Label {
                 text: qsTr("Timer")
-                color: Material.accent
                 font.pixelSize: 24
                 font.weight: Font.Light
                 Layout.fillWidth: true
@@ -98,7 +82,7 @@ ApplicationWindow {
             }
 
             RowLayout {
-                visible: !object.timer_started
+                enabled: !object.timer_started
                 Layout.fillHeight: true
 
                 ToolButton {
@@ -107,7 +91,10 @@ ApplicationWindow {
                     font.family: material_icon.name
                     font.pixelSize: 28
 
-                    onClicked: dialogConnection.open();
+                    onClicked: {
+                        dialogConnection.open();
+                        statusBar.theme = StatusBar.Dark
+                    }
                 }
             }
         }
@@ -123,7 +110,7 @@ ApplicationWindow {
         visible: settings.type == 1
     }
 
-    Rectangle {
+    /*Rectangle {
         width: parent.width
         height: 25
         color: "transparent"
@@ -135,7 +122,7 @@ ApplicationWindow {
             text: qsTr("Tempo real: ") + countdown.getRealTime
             font.pixelSize: 10
         }
-    }
+    }*/
 
     DialogConnection {
         id: dialogConnection
@@ -224,12 +211,10 @@ ApplicationWindow {
                     id: tooltip_text
                     width: window.width *0.8
                     height: contentHeight
-
                     anchors.margins: 5
 
                     text: message._text
                     color: Material.foreground
-
                     wrapMode: Text.WordWrap
                 }
             }
@@ -256,7 +241,7 @@ ApplicationWindow {
         onMinutesChanged: (settings.type == 0)? receiverPage.running_timer.setMinutes.currentIndex = minutes :
                                                 controllerPage.running_timer.setMinutes.currentIndex = minutes
         onHoursChanged: (settings.type == 0)? controllerPage.running_timer.setMinutes.currentIndex = minutes :
-                                                controllerPage.running_timer.setMinutes.currentIndex = minutes
+                                              controllerPage.running_timer.setMinutes.currentIndex = minutes
         onStatus_timerChanged: object.timer_started = status_timer
         onTimerPauseChanged: object.timer_paused = timerPause
         onSend_timerChanged: tcp_connect.setData_send(send_timer)
@@ -296,7 +281,8 @@ ApplicationWindow {
     }
 
     StatusBar {
-        theme: StatusBar.Dark
-        color: "#222222"
+        id: statusBar
+        theme: Material.Dark
+        color: object.alert_color
     }
 }
