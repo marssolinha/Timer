@@ -296,6 +296,7 @@ ApplicationWindow {
     }
 
     StatusBar {
-        color: "#222"
+        theme: StatusBar.Dark
+        color: "#222222"
     }
 }

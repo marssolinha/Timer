@@ -5,8 +5,8 @@ Countdown::Countdown(QObject *parent) :
 {
     connect(this, SIGNAL(timeChanged()), this, SLOT(TimerStart()));
     connect(timer, SIGNAL(timeout()), this, SLOT(Timer()));
-    connect(realtime, SIGNAL(timeout()), this, SLOT(realtTime()));
-    realtime->start(15);
+    //connect(realtime, SIGNAL(timeout()), this, SLOT(realtTime()));
+    //realtime->start(15);
 }
 
 void Countdown::setTimeString(QString get_time)
@@ -14,7 +14,7 @@ void Countdown::setTimeString(QString get_time)
     m_time = QDateTime::fromString(QString("1970-01-01 %1 -00").arg(get_time), Qt::ISODate).toTime_t();
     m_time_start = QDateTime::currentDateTimeUtc().toTime_t();
     m_time_end = m_time + m_time_start;
-    timer->setInterval(100);
+    timer->setInterval(20);
     prepareStartTime();
 }
 
@@ -23,6 +23,7 @@ void Countdown::setTimeFromController(QJsonObject get_timer)
     qint32 current_time = QDateTime::currentDateTimeUtc().toTime_t();
     qint32 time_start =  get_timer.value("time_start").toInt();
     m_diff = time_start - current_time;
+    qDebug() << m_diff;
 
     m_time = get_timer.value("time").toInt();
     m_time_start = time_start;

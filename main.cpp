@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include "./source/statusbar.h"
+#include "./source/statusbar/statusbar.h"
 #include "./source/hostinfo.h"
 #include "./source/networkdiscovery.h"
 #include "./source/tcpconnect.h"

@@ -1,5 +1,5 @@
-QT += quick network
-android: QT += androidextras
+QT += quick network qml quick quickcontrols2
+# android: QT += androidextras
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -14,11 +14,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
-    source/statusbar.cpp \
     source/hostinfo.cpp \
     source/networkdiscovery.cpp \
     source/tcpconnect.cpp \
-    source/countdown.cpp
+    source/countdown.cpp \
+    source/statusbar/statusbar.cpp
 
 RESOURCES += qml.qrc
 
@@ -33,13 +33,28 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+android {
+    QT += androidextras
+    SOURCES += \
+        source/statusbar/statusbar_android.cpp
+    DISTFILES += \
+        android/AndroidManifest.xml \
+        android/res/values/libs.xml
+} else:ios {
+    LIBS += -framework UIKit
+    OBJECTIVE_SOURCES += \
+        source/statusbar/statusbar_ios.mm
+} else {
+    SOURCES += \
+        source/statusbar/statusbar_dummy.cpp
+}
+
 HEADERS += \
-    source/statusbar.h \
     source/hostinfo.h \
     source/networkdiscovery.h \
     source/tcpconnect.h \
-    source/countdown.h
+    source/countdown.h \
+    source/statusbar/statusbar.h \
+    source/statusbar/statusbar_p.h
 
-DISTFILES += \
-    android/AndroidManifest.xml \
-    android/res/values/libs.xml
+
