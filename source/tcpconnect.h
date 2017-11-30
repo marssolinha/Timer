@@ -176,8 +176,8 @@ private:
     bool server_state = false, client_state = false;
     bool receiver_connect() { return client_state; }
 
-    QString _addressController;
-    QString addressController() { return _addressController; }
+    QString m_addressController;
+    QString addressController() { return m_addressController; }
 
     QJsonObject m_receive_timer = {};
     inline QJsonObject receive_timer() { return m_receive_timer; }

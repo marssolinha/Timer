@@ -8,7 +8,7 @@ Dialog {
     property alias timer_alert: timer_alert
 
     title: qsTr("Configurações")
-    width: window.width < 400? window.width : 400
+    width: window.width < 400? window.width -10 : 400
     height: 260
 
     modal: true

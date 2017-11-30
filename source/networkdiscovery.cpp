@@ -14,7 +14,7 @@ NetworkDiscovery::NetworkDiscovery(QObject *parent) : QObject(parent)
 
 void NetworkDiscovery::readSocketController()
 {
-    if (_type == 0)
+    if (m_type == 0)
         return;
     QByteArray buffer;
     QHostAddress client_addr;
@@ -50,7 +50,7 @@ void NetworkDiscovery::sendReponseClient(QHostAddress addr)
 {
     qDebug() << "Send response";
     QByteArray datagram;
-    datagram.append(_device);
+    datagram.append(m_device);
     udpClient->writeDatagram(datagram.data(), datagram.size(), addr, receiver_port);
     qDebug() << datagram << addr.toString() << receiver_port;
 }
@@ -62,15 +62,15 @@ void NetworkDiscovery::sendRequestController()
     udpClient->writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, controller_port);
 }
 
-void NetworkDiscovery::setType(quint8 l_type)
+void NetworkDiscovery::setType(quint8 _type)
 {
-    _type = l_type;
+    m_type = _type;
     emit typeChanged();
 }
 
-void NetworkDiscovery::setDevice(QString l_device)
+void NetworkDiscovery::setDevice(QString _device)
 {
-    _device = l_device;
+    m_device = _device;
     emit deviceChanged();
 }
 

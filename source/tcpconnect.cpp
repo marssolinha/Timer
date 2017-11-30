@@ -157,8 +157,8 @@ void TcpConnect::server_disconnectAllSockets()
 
 void TcpConnect::client_connectController()
 {
-    if (_addressController != "")
-        client->connectToHost(_addressController, controller_port);
+    if (m_addressController != "")
+        client->connectToHost(m_addressController, controller_port);
 }
 
 void TcpConnect::client_connectedController()
@@ -220,7 +220,7 @@ void TcpConnect::client_writeSocket(const QJsonArray data)
 
 void TcpConnect::setAddressController(QString address)
 {
-    _addressController = address;
+    m_addressController = address;
     emit addressControllerChanged();
 }
 

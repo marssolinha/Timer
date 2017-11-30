@@ -7,7 +7,7 @@ import QtQuick.Controls.Material 2.2
 Dialog {
     id: dialog
     title: qsTr("Conexão")
-    width: window.width < 400? window.width : 400
+    width: window.width < 400? window.width -10 : 400
     height: 400
 
     modal: true

@@ -20,12 +20,12 @@ QString HostInfo::getAddress()
 
 int HostInfo::getPin()
 {
-    return l_pin;
+    return m_pin;
 }
 
 void HostInfo::generatePin(int time)
 {
     qsrand(time);
-    l_pin = qrand() % 10000;
+    m_pin = qrand() % 10000;
     emit pinChanged();
 }

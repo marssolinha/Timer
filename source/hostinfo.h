@@ -30,7 +30,7 @@ public slots:
 protected:
 
 private:
-    int l_pin;
+    int m_pin;
     QString interface;
 
 };

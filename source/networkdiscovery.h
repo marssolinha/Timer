@@ -25,8 +25,8 @@ Q_SIGNALS:
 
 public slots:
     void sendRequestController();
-    void setType(quint8 l_type);
-    void setDevice(QString l_device);
+    void setType(quint8 _type);
+    void setDevice(QString _device);
     void clearController(QList<QVariant>);
 
 private slots:
@@ -39,11 +39,11 @@ private:
     const quint16 controller_port = 4191;
     const quint16 receiver_port = 8191;
 
-    quint8 _type;
-    quint8 type() { return _type; }
+    quint8 m_type;
+    quint8 type() { return m_type; }
 
-    QString _device = "";
-    QString device() { return _device; }
+    QString m_device = "";
+    QString device() { return m_device; }
 
     QList<QVariant> _controller;
     QList<QVariant> controller() { return _controller; }

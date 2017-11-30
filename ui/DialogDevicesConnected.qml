@@ -6,7 +6,7 @@ import QtQuick.Controls.Material 2.2
 Dialog {
     id: dialog
     title: qsTr("Dispositivos conectados")
-    width: window.width < 300? window.width : 300
+    width: window.width < 300? window.width -10 : 300
     height: 200
 
     modal: true
