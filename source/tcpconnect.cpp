@@ -121,6 +121,15 @@ void TcpConnect::server_disconnectClient(qint32 index)
     }
 }
 
+void TcpConnect::connectToController(QVariantMap variant)
+{
+    QString address = variant.value("address").toString();
+    if (address == m_local_addr)
+        return;
+    setAddressController(address);
+    client_connectController();
+}
+
 void TcpConnect::server_disconnectSocket()
 {
     qint32 i = 0;
@@ -222,6 +231,12 @@ void TcpConnect::setAddressController(QString address)
 {
     m_addressController = address;
     emit addressControllerChanged();
+}
+
+void TcpConnect::setLocal_addr(QString address)
+{
+    m_local_addr = address;
+    emit local_addrChanged();
 }
 
 QList<QVariant> TcpConnect::list_devices()

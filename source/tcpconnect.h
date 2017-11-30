@@ -16,6 +16,7 @@ class TcpConnect : public QObject
     Q_OBJECT
     Q_PROPERTY(quint16 serviceType READ serviceType WRITE setServiceType NOTIFY serviceTypeChanged)
     Q_PROPERTY(QString addressController READ addressController WRITE setAddressController NOTIFY addressControllerChanged)
+    Q_PROPERTY(QString local_addr READ local_addr WRITE setLocal_addr NOTIFY local_addrChanged)
     Q_PROPERTY(bool receiver_connect READ receiver_connect NOTIFY receiver_connectChanged)
     Q_PROPERTY(QJsonObject receive_timer READ receive_timer NOTIFY receive_timerChanged)
     Q_PROPERTY(QJsonObject receive_command READ receive_command NOTIFY receive_commandChanged)
@@ -62,6 +63,10 @@ Q_SIGNALS:
      * @brief list_devicesChanged
      */
     void list_devicesChanged();
+    /**
+     * @brief local_addrChanged
+     */
+    void local_addrChanged();
 
 public slots:
     /**
@@ -74,6 +79,11 @@ public slots:
      * @param index
      */
     void server_disconnectClient(qint32 index);
+    /**
+     * @brief connectToController
+     * @param variant
+     */
+    void connectToController(QVariantMap variant);
 
 protected slots:
     /**
@@ -152,6 +162,7 @@ private slots:
      * @param address
      */
     void setAddressController(QString address);
+    void setLocal_addr(QString address);
 
 private:
     QTcpServer *server;
@@ -189,6 +200,9 @@ private:
 
     QList<QVariant> m_list_devices;
     QList<QVariant> list_devices();
+
+    QString m_local_addr;
+    QString local_addr() { return m_local_addr; }
 };
 
 #endif // TCPCONNECT_H

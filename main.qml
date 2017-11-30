@@ -338,11 +338,14 @@ ApplicationWindow {
         id: networkDiscovery
         type: settings.type
         device: settings.local_name
+
+        onConnect_controllerChanged: tcp_connect.connectToController(connect_controller);
     }
 
     TcpConnect {
         id: tcp_connect
         serviceType: settings.type
+        local_addr: settings.local_addr
         addressController: settings.controller_addr
         onReceive_timerChanged: countdown.setTimeFromController(receive_timer)
         onReceive_commandChanged: countdown.getCommand(receive_command)

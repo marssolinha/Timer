@@ -38,12 +38,20 @@ void NetworkDiscovery::readSocketClient()
     udpClient->readDatagram(buffer.data(), buffer.size(), &_controller_addr, &_controller_port);
 
     QJsonObject obj;
-    obj.insert("device", buffer.data());
     obj.insert("address", _controller_addr.toString());
     obj.insert("text", QString("%1 (%2)").arg(buffer.data()).arg(_controller_addr.toString()));
 
-    _controller.append(obj.toVariantMap());
-    emit controllerChanged();
+    QRegularExpression expression("connect:");
+    QRegularExpressionMatch expression_match = expression.match(buffer.data());
+    if (expression_match.hasMatch()) {
+        obj.insert("device", QString(buffer.data()).replace(QString("connect:"), QString("")));
+        m_connect_controller = obj.toVariantMap();
+        emit connect_controllerChanged();
+    } else {
+        obj.insert("device", buffer.data());
+        m_controller.append(obj.toVariantMap());
+        emit controllerChanged();
+    }
 }
 
 void NetworkDiscovery::sendReponseClient(QHostAddress addr)
@@ -76,6 +84,14 @@ void NetworkDiscovery::setDevice(QString _device)
 
 void NetworkDiscovery::clearController(QList<QVariant>)
 {
-    _controller.clear();
+    m_controller.clear();
     emit controllerChanged();
+}
+
+void NetworkDiscovery::sendSignalToConnection()
+{
+    qDebug() << "send signal to receivers connection";
+    QByteArray datagram = "connect:";
+    datagram.append(m_device);
+    udpServer->writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, receiver_port);
 }

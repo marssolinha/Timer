@@ -7,7 +7,7 @@ Dialog {
     id: dialog
     title: qsTr("Dispositivos conectados")
     width: window.width < 300? window.width -10 : 300
-    height: 200
+    height: 250
 
     modal: true
     x: (window.width - width) /2
@@ -48,6 +48,14 @@ Dialog {
                 text: qsTr("Nenhum dispositivo conectado")
                 horizontalAlignment: Label.AlignHCenter
                 Layout.fillWidth: true
+            }
+
+            Button {
+                Layout.fillWidth: true
+                text: qsTr("Enviar sinal de conexão")
+                Material.background: Material.color(Material.Green, Material.Shade500)
+
+                onClicked: networkDiscovery.sendSignalToConnection();
             }
         }
     }

@@ -7,6 +7,8 @@
 #include <QNetworkDatagram>
 #include <QVariant>
 #include <QJsonObject>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 
 class NetworkDiscovery : public QObject
 {
@@ -14,6 +16,7 @@ class NetworkDiscovery : public QObject
     Q_PROPERTY(QString device READ device WRITE setDevice NOTIFY deviceChanged)
     Q_PROPERTY(quint8 type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(QList<QVariant> controller READ controller WRITE clearController NOTIFY controllerChanged)
+    Q_PROPERTY(QVariant connect_controller READ connect_controller NOTIFY connect_controllerChanged)
 
 public:
     explicit NetworkDiscovery(QObject *parent = nullptr);
@@ -22,12 +25,14 @@ Q_SIGNALS:
     void typeChanged();
     void controllerChanged();
     void deviceChanged();
+    void connect_controllerChanged();
 
 public slots:
     void sendRequestController();
     void setType(quint8 _type);
     void setDevice(QString _device);
     void clearController(QList<QVariant>);
+    void sendSignalToConnection();
 
 private slots:
     void readSocketController();
@@ -45,8 +50,11 @@ private:
     QString m_device = "";
     QString device() { return m_device; }
 
-    QList<QVariant> _controller;
-    QList<QVariant> controller() { return _controller; }
+    QList<QVariant> m_controller;
+    QList<QVariant> controller() { return m_controller; }
+
+    QVariant m_connect_controller;
+    QVariant connect_controller() { return m_connect_controller; }
 };
 
 #endif // NETWORKDISCOVERY_H
