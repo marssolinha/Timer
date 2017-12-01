@@ -2,14 +2,7 @@
 
 NetworkDiscovery::NetworkDiscovery(QObject *parent) : QObject(parent)
 {
-    udpClient = new QUdpSocket(this);
-    udpClient->bind(QHostAddress::AnyIPv4, receiver_port);
-
-    udpServer = new QUdpSocket(this);
-    udpServer->bind(QHostAddress::AnyIPv4, controller_port);
-
-    connect(udpClient, SIGNAL(readyRead()), this, SLOT(readSocketClient()));
-    connect(udpServer, SIGNAL(readyRead()), this, SLOT(readSocketController()));
+    connect(this, SIGNAL(typeChanged()), this, SLOT(serviceChange()));
 }
 
 void NetworkDiscovery::readSocketController()
@@ -94,4 +87,54 @@ void NetworkDiscovery::sendSignalToConnection()
     QByteArray datagram = "connect:";
     datagram.append(m_device);
     udpServer->writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, receiver_port);
+}
+
+void NetworkDiscovery::serviceChange()
+{
+    switch (m_type) {
+    case RECEIVER:
+        controller_stop();
+        receiver_start();
+        break;
+    case CONTROLLER:
+        receiver_stop();
+        controller_start();
+        break;
+    }
+}
+
+void NetworkDiscovery::controller_start()
+{
+    udpServer = new QUdpSocket(this);
+    if (!udpServer->bind(QHostAddress::AnyIPv4, controller_port))
+        qDebug() << "UDP Server error:" << udpServer->errorString();
+    else
+        server_state = true;
+    connect(udpServer, SIGNAL(readyRead()), this, SLOT(readSocketController()));
+}
+
+void NetworkDiscovery::controller_stop()
+{
+    if (server_state) {
+        udpServer->close();
+        delete udpServer;
+    }
+}
+
+void NetworkDiscovery::receiver_start()
+{
+    udpClient = new QUdpSocket(this);
+    if (!udpClient->bind(QHostAddress::AnyIPv4, receiver_port))
+        qDebug() << "UDP Client error: " << udpClient->error() << udpClient->errorString();
+    else
+        client_state = true;
+    connect(udpClient, SIGNAL(readyRead()), this, SLOT(readSocketClient()));
+}
+
+void NetworkDiscovery::receiver_stop()
+{
+    if (client_state) {
+        udpClient->close();
+        delete udpClient;
+    }
 }

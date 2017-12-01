@@ -54,6 +54,13 @@ void Countdown::prepareStartTime()
     emit timeChanged();
 }
 
+void Countdown::prepareRequestTimerIfRunning()
+{
+    if (!m_alert)
+        return;
+    emit send_timerIfRunningChanged();
+}
+
 void Countdown::prepareStopTime()
 {
     m_object_command = {};
@@ -106,7 +113,6 @@ void Countdown::Timer()
         m_alert = true;
         emit alertChanged();
     }
-
     emit hoursChanged();
     emit minutesChanged();
     emit secondsChanged();

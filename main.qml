@@ -318,6 +318,7 @@ ApplicationWindow {
         onTimerPauseChanged: object.timer_paused = timerPause
         onSend_timerChanged: tcp_connect.setData_send(send_timer)
         onSend_commandChanged: tcp_connect.setData_send(send_command)
+        onSend_timerIfRunningChanged: console.log(Object.keys(send_timerIfRunning))
     }
 
     Timer {
@@ -330,7 +331,6 @@ ApplicationWindow {
             counttimer.setHours.currentIndex = str_time.getUTCHours();
             counttimer.setMinutes.currentIndex = str_time.getUTCMinutes();
             counttimer.setSeconds.currentIndex = str_time.getUTCSeconds();
-            //if (object._counttimer > object._time)
         }
     }
 
@@ -349,6 +349,9 @@ ApplicationWindow {
         addressController: settings.controller_addr
         onReceive_timerChanged: countdown.setTimeFromController(receive_timer)
         onReceive_commandChanged: countdown.getCommand(receive_command)
+        onAddressControllerChanged: settings.controller_addr = addressController
+        onNameControllerChanged: settings.controller_name = nameController
+        onSend_TimerIfRunning: countdown.prepareRequestTimerIfRunning()
     }
 
     Connections {

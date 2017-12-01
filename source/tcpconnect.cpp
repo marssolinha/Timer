@@ -9,17 +9,18 @@ TcpConnect::TcpConnect(QObject *parent) : QObject(parent)
     connect(server, SIGNAL(newConnection()), this, SLOT(server_incomingConnect()));
     connect(client, SIGNAL(connected()), this, SLOT(client_connectedController()));
     connect(client, SIGNAL(readyRead()), this, SLOT(client_readSocket()));
+    connect(client, SIGNAL(disconnected()), this, SLOT(client_disconnectController()));
 }
 
 void TcpConnect::setServiceType(quint16 _type)
 {
-    l_service_type = _type;
+    m_service_type = _type;
     emit serviceTypeChanged();
 }
 
 void TcpConnect::interpreterService()
 {
-    switch (l_service_type) {
+    switch (m_service_type) {
     case RECEIVER:
         server_disconnectAllSockets();
         server_stop();
@@ -62,10 +63,11 @@ void TcpConnect::server_incomingConnect()
     connect(_client, SIGNAL(readyRead()), this, SLOT(server_readSocket()));
     connect(_client, SIGNAL(disconnected()), this, SLOT(server_disconnectSocket()));
 
-    //qDebug() << "New connection" << _client->peerAddress().toString();
     clients.append(_client);
     emit devicesChanged();
     emit list_devicesChanged();
+    m_list_send_timerIfRunning.append(clients.length() -1);
+    emit send_TimerIfRunning();
 }
 
 void TcpConnect::server_readSocket()
@@ -86,10 +88,17 @@ void TcpConnect::server_readSocket()
     }
 }
 
+void TcpConnect::server_sendIfTimerRunning()
+{
+    for (const qint32 it : m_list_send_timerIfRunning) {
+        qDebug() << "Iterator from clients" << m_list_send_timerIfRunning.at(it);
+    }
+}
+
 void TcpConnect::server_parseCommand(const QJsonObject obj)
 {
     for (const QString &key : obj.keys()) {
-
+        qDebug() << key;
     }
 }
 
@@ -127,6 +136,7 @@ void TcpConnect::connectToController(QVariantMap variant)
     if (address == m_local_addr)
         return;
     setAddressController(address);
+    setNameController(variant.value("device").toString());
     client_connectController();
 }
 
@@ -166,7 +176,7 @@ void TcpConnect::server_disconnectAllSockets()
 
 void TcpConnect::client_connectController()
 {
-    if (m_addressController != "")
+    if (m_addressController != "" && m_service_type == RECEIVER)
         client->connectToHost(m_addressController, controller_port);
 }
 
@@ -181,6 +191,7 @@ void TcpConnect::client_disconnectController()
     if (client->isOpen())
         client->close();
     client_state = false;
+    qDebug() << "Disconect";
     emit receiver_connectChanged();
 }
 
@@ -227,13 +238,19 @@ void TcpConnect::client_writeSocket(const QJsonArray data)
         client->write(document.toJson(QJsonDocument::Compact));
 }
 
-void TcpConnect::setAddressController(QString address)
+void TcpConnect::setAddressController(const QString address)
 {
     m_addressController = address;
     emit addressControllerChanged();
 }
 
-void TcpConnect::setLocal_addr(QString address)
+void TcpConnect::setNameController(const QString name)
+{
+    m_nameController = name;
+    emit nameControllerChanged();
+}
+
+void TcpConnect::setLocal_addr(const QString address)
 {
     m_local_addr = address;
     emit local_addrChanged();

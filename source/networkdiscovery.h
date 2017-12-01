@@ -34,6 +34,13 @@ public slots:
     void clearController(QList<QVariant>);
     void sendSignalToConnection();
 
+protected slots:
+    void serviceChange();
+    void controller_start();
+    void controller_stop();
+    void receiver_start();
+    void receiver_stop();
+
 private slots:
     void readSocketController();
     void readSocketClient();
@@ -43,6 +50,8 @@ private:
     QUdpSocket *udpClient, *udpServer;
     const quint16 controller_port = 4191;
     const quint16 receiver_port = 8191;
+
+    bool server_state = false, client_state = false;
 
     quint8 m_type;
     quint8 type() { return m_type; }
@@ -55,6 +64,11 @@ private:
 
     QVariant m_connect_controller;
     QVariant connect_controller() { return m_connect_controller; }
+
+    enum {
+        RECEIVER = 0,
+        CONTROLLER
+    };
 };
 
 #endif // NETWORKDISCOVERY_H

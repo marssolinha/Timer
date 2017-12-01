@@ -16,6 +16,7 @@ class TcpConnect : public QObject
     Q_OBJECT
     Q_PROPERTY(quint16 serviceType READ serviceType WRITE setServiceType NOTIFY serviceTypeChanged)
     Q_PROPERTY(QString addressController READ addressController WRITE setAddressController NOTIFY addressControllerChanged)
+    Q_PROPERTY(QString nameController READ nameController WRITE setNameController NOTIFY nameControllerChanged)
     Q_PROPERTY(QString local_addr READ local_addr WRITE setLocal_addr NOTIFY local_addrChanged)
     Q_PROPERTY(bool receiver_connect READ receiver_connect NOTIFY receiver_connectChanged)
     Q_PROPERTY(QJsonObject receive_timer READ receive_timer NOTIFY receive_timerChanged)
@@ -40,6 +41,10 @@ Q_SIGNALS:
      */
     void addressControllerChanged();
     /**
+     * @brief nameControllerChanged
+     */
+    void nameControllerChanged();
+    /**
      * @brief receiver_connectChanged
      */
     void receiver_connectChanged();
@@ -47,6 +52,10 @@ Q_SIGNALS:
      * @brief data_sendChanged
      */
     void data_sendChanged();
+    /**
+     * @brief send_TimerIfRunning
+     */
+    void send_TimerIfRunning();
     /**
      * @brief receive_timerChanged
      */
@@ -130,6 +139,11 @@ private slots:
      */
     void server_readSocket();
     /**
+     * @brief server_sendIfTimerRunning
+     * @param _client
+     */
+    void server_sendIfTimerRunning();
+    /**
      * @brief server_parseCommand
      */
     void server_parseCommand(const QJsonObject obj);
@@ -161,23 +175,33 @@ private slots:
      * @brief setAddressController
      * @param address
      */
-    void setAddressController(QString address);
-    void setLocal_addr(QString address);
+    void setAddressController(const QString address);
+    /**
+     * @brief setNameController
+     * @param name
+     */
+    void setNameController(const QString name);
+    /**
+     * @brief setLocal_addr
+     * @param address
+     */
+    void setLocal_addr(const QString address);
 
 private:
     QTcpServer *server;
     QTcpSocket *client;
     QList<QTcpSocket *> clients;
+    QList<qint32> m_list_send_timerIfRunning;
 
     const quint16 controller_port = 4191;
     const quint16 receiver_port = 8191;
 
-    quint16 l_service_type;
+    quint16 m_service_type;
     /**
      * @brief serviceType
      * @return
      */
-    quint16 serviceType() { return l_service_type; }
+    quint16 serviceType() { return m_service_type; }
 
     enum {
         RECEIVER = 0,
@@ -189,6 +213,9 @@ private:
 
     QString m_addressController;
     QString addressController() { return m_addressController; }
+
+    QString m_nameController;
+    QString nameController() { return m_nameController; }
 
     QJsonObject m_receive_timer = {};
     inline QJsonObject receive_timer() { return m_receive_timer; }

@@ -42,7 +42,9 @@
                           application still try to draw after
                           "applicationStateChanged(Qt::ApplicationSuspended)"
                           signal is sent! -->
-            <meta-data android:name="android.app.background_running" android:value="true"/>
+            <service android:process=":qt" android:name=".Countdown">
+                <meta-data android:name="android.app.background_running" android:value="true"/>
+            </service>
             <!-- Background running -->
 
             <!-- auto screen scale factor -->
@@ -77,4 +79,6 @@
          Remove the comment if you do not require these default features. -->
         <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
 
+<!-- %%INSERT_PERMISSIONS -->
+    <!-- %%INSERT_FEATURES -->
 </manifest>
