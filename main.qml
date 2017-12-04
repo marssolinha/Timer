@@ -95,7 +95,7 @@ ApplicationWindow {
             anchors.fill: parent
 
             Label {
-                text: "\uE425"
+                text: "\uE8B5"
                 font.family: material_icon.name
                 font.pixelSize: 32
                 Layout.leftMargin: 10
@@ -130,6 +130,36 @@ ApplicationWindow {
                     text: "\uE337"
                     font.family: material_icon.name
                     font.pixelSize: 28
+
+                    Rectangle {
+                        width: 16
+                        height: width
+                        radius: width
+                        anchors.right: parent.right
+                        anchors.rightMargin: 5
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 5
+                        color: Qt.rgba(255, 255, 255, 0.80)
+
+                        Text {
+                            visible: settings.type
+                            anchors.fill: parent
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                            text: tcp_connect.devices
+                            font.pixelSize: 12
+                            font.bold: true
+                            color: object.alert_color
+                        }
+
+                        Rectangle {
+                            width: 8
+                            height: width
+                            radius: width
+                            anchors.centerIn: parent
+                            color: tcp_connect.receiver_connect? Material.color(Material.Green, Material.Shade600) : object.alert_color
+                        }
+                    }
 
                     onClicked: {
                         dialogConnection.open();

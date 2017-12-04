@@ -14,7 +14,7 @@ void Countdown::setTimeString(QString get_time)
     m_time = QDateTime::fromString(QString("1970-01-01 %1 -00").arg(get_time), Qt::ISODate).toTime_t();
     m_time_start = QDateTime::currentDateTimeUtc().toTime_t();
     m_time_end = m_time + m_time_start;
-    timer->setInterval(20);
+    timer->setInterval(40);
     prepareStartTime();
 }
 
