@@ -95,7 +95,7 @@ ApplicationWindow {
             anchors.fill: parent
 
             Label {
-                text: "\uE8B5"
+                text: "\uE924"
                 font.family: material_icon.name
                 font.pixelSize: 32
                 Layout.leftMargin: 10
