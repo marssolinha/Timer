@@ -16,7 +16,9 @@ class TcpConnect : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(quint16 serviceType READ serviceType WRITE setServiceType NOTIFY serviceTypeChanged)
+    Q_PROPERTY(qint16 pinPass READ pinPass WRITE setPinPass NOTIFY pinPassChanged)
     Q_PROPERTY(QString addressController READ addressController WRITE setAddressController NOTIFY addressControllerChanged)
+    Q_PROPERTY(qint16 pinController READ pinController WRITE setPinController NOTIFY pinControllerChanged)
     Q_PROPERTY(QString nameController READ nameController WRITE setNameController NOTIFY nameControllerChanged)
     Q_PROPERTY(QString local_addr READ local_addr WRITE setLocal_addr NOTIFY local_addrChanged)
     Q_PROPERTY(bool receiver_connect READ receiver_connect NOTIFY receiver_connectChanged)
@@ -39,9 +41,17 @@ Q_SIGNALS:
      */
     void serviceTypeChanged();
     /**
+     * @brief pinPassChanged
+     */
+    void pinPassChanged();
+    /**
      * @brief addressControllerChanged
      */
     void addressControllerChanged();
+    /**
+     * @brief pinControllerChanged
+     */
+    void pinControllerChanged();
     /**
      * @brief nameControllerChanged
      */
@@ -138,6 +148,11 @@ private slots:
      */
     void setServiceType(quint16 _type);
     /**
+     * @brief setPinPass
+     * @param pin_code
+     */
+    void setPinPass(qint16 pin_code);
+    /**
      * @brief interpreterService
      */
     void interpreterService();
@@ -158,7 +173,13 @@ private slots:
     /**
      * @brief server_parseCommand
      */
-    void server_parseCommand(const QJsonObject obj);
+    void server_parseCommand(const QJsonObject obj, qint32 it);
+    /**
+     * @brief server_validateUser
+     * @param obj
+     * @param it
+     */
+    void server_validateUser(const QJsonObject obj, qint32 it);
     /**
      * @brief server_writeSocket
      */
@@ -189,6 +210,11 @@ private slots:
      */
     void setAddressController(const QString address);
     /**
+     * @brief setPinController
+     * @param pin
+     */
+    void setPinController(const qint16 pin);
+    /**
      * @brief setNameController
      * @param name
      */
@@ -202,18 +228,17 @@ private slots:
 private:
     QTcpServer *server;
     QTcpSocket *client;
-    QList<QTcpSocket *> clients;
+    QList<QPair<QTcpSocket *, bool>> clients;
     QList<qint32> m_list_send_timerIfRunning;
 
     const quint16 controller_port = 4191;
     const quint16 receiver_port = 8191;
 
     quint16 m_service_type;
-    /**
-     * @brief serviceType
-     * @return
-     */
     quint16 serviceType() { return m_service_type; }
+
+    qint16 m_pinPass = 0;
+    qint16 pinPass() { return m_pinPass; }
 
     enum {
         RECEIVER = 0,
@@ -225,6 +250,9 @@ private:
 
     QString m_addressController;
     QString addressController() { return m_addressController; }
+
+    qint16 m_pinController;
+    qint16 pinController() { return m_pinController; }
 
     QString m_nameController;
     QString nameController() { return m_nameController; }

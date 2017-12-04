@@ -18,6 +18,12 @@ void TcpConnect::setServiceType(quint16 _type)
     emit serviceTypeChanged();
 }
 
+void TcpConnect::setPinPass(qint16 pin_code)
+{
+    m_pinPass = pin_code;
+    emit pinPassChanged();
+}
+
 void TcpConnect::interpreterService()
 {
     switch (m_service_type) {
@@ -64,11 +70,9 @@ void TcpConnect::server_incomingConnect()
     connect(_client, SIGNAL(disconnected()), this, SLOT(server_disconnectSocket()));
 
     prepare_current_time_toSend(_client);
-    clients.append(std::move(_client));
+    clients.append(qMakePair(std::move(_client), false));
     emit devicesChanged();
     emit list_devicesChanged();
-    m_list_send_timerIfRunning.append(clients.length() -1);
-    emit send_TimerIfRunning();
 }
 
 void TcpConnect::prepare_current_time_toSend(QTcpSocket *&_client)
@@ -79,16 +83,16 @@ void TcpConnect::prepare_current_time_toSend(QTcpSocket *&_client)
 
 void TcpConnect::server_readSocket()
 {
-    for (auto v_client : clients) {
-        if (v_client->bytesAvailable()) {
-            v_client->flush();
-            QByteArray data = v_client->readAll();
+    for (qint32 it = 0; it < clients.length(); ++it) {
+        if (clients[it].first->bytesAvailable()) {
+            clients[it].first->flush();
+            QByteArray data = clients[it].first->readAll();
             QJsonParseError parseError;
             QJsonDocument doc_tcp = QJsonDocument::fromJson(data, &parseError);
 
             if (parseError.error == 0) {
                 for (const QJsonValue &json_object : doc_tcp.array()) {
-                    server_parseCommand(json_object.toObject());
+                    server_parseCommand(json_object.toObject(), it);
                 }
             }
         }
@@ -99,25 +103,41 @@ void TcpConnect::server_sendIfTimerRunning(const QJsonArray data)
 {
     QJsonDocument document(data);
     for (const qint32 it : m_list_send_timerIfRunning) {
-        clients[it]->flush();
-        clients[it]->write(document.toJson(QJsonDocument::Compact));
+        if (clients[it].second) {
+            clients[it].first->flush();
+            clients[it].first->write(document.toJson(QJsonDocument::Compact));
+            m_list_send_timerIfRunning.removeAt(it);
+        }
     }
-    m_list_send_timerIfRunning.clear();
 }
 
-void TcpConnect::server_parseCommand(const QJsonObject obj)
+void TcpConnect::server_parseCommand(const QJsonObject obj, qint32 it)
 {
     for (const QString &key : obj.keys()) {
-        qDebug() << key;
+        if (key == "connect") {
+            server_validateUser(obj.value(key).toObject(), it);
+        }
     }
+}
+
+void TcpConnect::server_validateUser(const QJsonObject obj, qint32 it)
+{
+    if (obj.value("pin").toInt() == m_pinPass) {
+        clients[it].second = true;
+        m_list_send_timerIfRunning.append(it);
+        emit send_TimerIfRunning();
+    } else
+        clients[it].first->close();
 }
 
 void TcpConnect::server_writeSocket(const QJsonArray data)
 {
     QJsonDocument document(data);
     for (auto v_client : clients) {
-        v_client->flush();
-        v_client->write(document.toJson(QJsonDocument::Compact));
+        if (v_client.second == true) {
+            v_client.first->flush();
+            v_client.first->write(document.toJson(QJsonDocument::Compact));
+        }
     }
 }
 
@@ -139,8 +159,8 @@ void TcpConnect::server_disconnectClient(qint32 index)
 {
     qint32 i = 0;
     for (auto v_client : clients) {
-        if (v_client->state() == QTcpSocket::ConnectedState && i == index) {
-            v_client->close();
+        if (v_client.first->state() == QTcpSocket::ConnectedState && i == index) {
+            v_client.first->close();
             clients.removeAt(i);
         }
         ++i;
@@ -161,9 +181,9 @@ void TcpConnect::server_disconnectSocket()
 {
     qint32 i = 0;
     for (auto v_client : clients) {
-        if (v_client->state() != QTcpSocket::ConnectedState) {
-            v_client->close();
-            v_client->deleteLater();
+        if (v_client.first->state() != QTcpSocket::ConnectedState) {
+            v_client.first->close();
+            v_client.first->deleteLater();
             clients.removeAt(i);
         }
         ++i;
@@ -175,9 +195,9 @@ void TcpConnect::server_disconnectSocket()
 void TcpConnect::server_disconnectAllSockets()
 {
     for (auto v_client : clients) {
-        if (v_client->state() == QTcpSocket::ConnectedState) {
-            v_client->close();
-            v_client->deleteLater();
+        if (v_client.first->state() == QTcpSocket::ConnectedState) {
+            v_client.first->close();
+            v_client.first->deleteLater();
         }
     }
     clients.clear();
@@ -199,6 +219,8 @@ void TcpConnect::client_connectedController()
 {
     client_state = true;
     emit receiver_connectChanged();
+    client->write(QString("[{\"connect\":{\"pin\":%1}}]").arg(m_pinController).toUtf8());
+    client->flush();
 }
 
 void TcpConnect::client_disconnectController()
@@ -259,6 +281,12 @@ void TcpConnect::setAddressController(const QString address)
     emit addressControllerChanged();
 }
 
+void TcpConnect::setPinController(const qint16 pin)
+{
+    m_pinController = pin;
+    emit pinControllerChanged();
+}
+
 void TcpConnect::setNameController(const QString name)
 {
     m_nameController = name;
@@ -276,7 +304,7 @@ QList<QVariant> TcpConnect::list_devices()
     m_list_devices.clear();
     for (const auto &v_client : clients) {
         QJsonObject obj;
-        obj.insert("ip", v_client->peerAddress().toString());
+        obj.insert("ip", v_client.first->peerAddress().toString());
         m_list_devices.append(obj.toVariantMap());
     }
     return m_list_devices;

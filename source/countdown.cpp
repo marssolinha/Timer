@@ -22,14 +22,13 @@ void Countdown::getCurrentTimeController(QJsonObject obj_time)
 {
     m_current_time = QDateTime::currentDateTimeUtc().toTime_t();
     m_current_time_controller = obj_time.value("time").toInt();
+    m_diff = m_current_time - m_current_time_controller;
 }
 
 void Countdown::setTimeFromController(QJsonObject get_timer)
 {
-    qint32 time_start =  get_timer.value("time_start").toInt();
-    m_diff = m_current_time - m_current_time_controller;
     m_time = get_timer.value("time").toInt();
-    m_time_start = time_start;
+    m_time_start = get_timer.value("time_start").toInt();
     m_time_end = get_timer.value("time_end").toInt();
     m_time_alert = get_timer.value("time_alert").toInt();
 

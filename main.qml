@@ -390,6 +390,8 @@ ApplicationWindow {
         serviceType: settings.type
         local_addr: settings.local_addr
         addressController: settings.controller_addr
+        pinPass: settings.pin
+        pinController: settings.controller_pin
         onReceive_current_time_controllerChanged: countdown.getCurrentTimeController(receive_current_time_controller)
         onReceive_timerChanged: countdown.setTimeFromController(receive_timer)
         onReceive_commandChanged: countdown.getCommand(receive_command)
