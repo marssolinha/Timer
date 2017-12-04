@@ -153,6 +153,7 @@ ApplicationWindow {
                         }
 
                         Rectangle {
+                            visible: !settings.type
                             width: 8
                             height: width
                             radius: width
