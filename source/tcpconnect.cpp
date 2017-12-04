@@ -63,11 +63,18 @@ void TcpConnect::server_incomingConnect()
     connect(_client, SIGNAL(readyRead()), this, SLOT(server_readSocket()));
     connect(_client, SIGNAL(disconnected()), this, SLOT(server_disconnectSocket()));
 
-    clients.append(_client);
+    prepare_current_time_toSend(_client);
+    clients.append(std::move(_client));
     emit devicesChanged();
     emit list_devicesChanged();
     m_list_send_timerIfRunning.append(clients.length() -1);
     emit send_TimerIfRunning();
+}
+
+void TcpConnect::prepare_current_time_toSend(QTcpSocket *&_client)
+{
+    _client->write(QString("[{\"current_time\":{\"time\":%1}}]").arg(QDateTime::currentDateTimeUtc().toTime_t()).toUtf8());
+    _client->flush();
 }
 
 void TcpConnect::server_readSocket()
@@ -88,11 +95,14 @@ void TcpConnect::server_readSocket()
     }
 }
 
-void TcpConnect::server_sendIfTimerRunning()
+void TcpConnect::server_sendIfTimerRunning(const QJsonArray data)
 {
+    QJsonDocument document(data);
     for (const qint32 it : m_list_send_timerIfRunning) {
-        qDebug() << "Iterator from clients" << m_list_send_timerIfRunning.at(it);
+        clients[it]->flush();
+        clients[it]->write(document.toJson(QJsonDocument::Compact));
     }
+    m_list_send_timerIfRunning.clear();
 }
 
 void TcpConnect::server_parseCommand(const QJsonObject obj)
@@ -116,6 +126,13 @@ void TcpConnect::setData_send(QJsonObject obj)
     QJsonArray array_send;
     array_send.append(obj);
     server_writeSocket(array_send);
+}
+
+void TcpConnect::setData_sendIfRunning(QJsonObject obj)
+{
+    QJsonArray array_send;
+    array_send.append(obj);
+    server_sendIfTimerRunning(array_send);
 }
 
 void TcpConnect::server_disconnectClient(qint32 index)
@@ -145,7 +162,6 @@ void TcpConnect::server_disconnectSocket()
     qint32 i = 0;
     for (auto v_client : clients) {
         if (v_client->state() != QTcpSocket::ConnectedState) {
-            qDebug() << "Disconnect" << v_client->peerAddress().toString();
             v_client->close();
             v_client->deleteLater();
             clients.removeAt(i);
@@ -160,7 +176,6 @@ void TcpConnect::server_disconnectAllSockets()
 {
     for (auto v_client : clients) {
         if (v_client->state() == QTcpSocket::ConnectedState) {
-            qDebug() << "Disconnect" << v_client->peerAddress().toString();
             v_client->close();
             v_client->deleteLater();
         }
@@ -191,7 +206,6 @@ void TcpConnect::client_disconnectController()
     if (client->isOpen())
         client->close();
     client_state = false;
-    qDebug() << "Disconect";
     emit receiver_connectChanged();
 }
 
@@ -219,11 +233,13 @@ void TcpConnect::client_readSocket()
 void TcpConnect::client_parseCommand(const QJsonObject obj)
 {
     for (const QString &key : obj.keys()) {
-        if (key == "start") {
+        if (key == "current_time") {
+            m_receive_current_time_controller = obj.value(key).toObject();
+            emit receive_current_time_controllerChanged();
+        } else if (key == "start") {
             m_receive_timer = obj.value(key).toObject();
             emit receive_timerChanged();
-        }
-        if (key == "action") {
+        } else if (key == "action") {
             m_receive_command = obj;
             emit receive_commandChanged();
         }
@@ -233,7 +249,6 @@ void TcpConnect::client_parseCommand(const QJsonObject obj)
 void TcpConnect::client_writeSocket(const QJsonArray data)
 {
     QJsonDocument document(data);
-
     if (client->waitForConnected())
         client->write(document.toJson(QJsonDocument::Compact));
 }
@@ -261,7 +276,7 @@ QList<QVariant> TcpConnect::list_devices()
     m_list_devices.clear();
     for (const auto &v_client : clients) {
         QJsonObject obj;
-        obj.insert("ip", v_client->localAddress().toString());
+        obj.insert("ip", v_client->peerAddress().toString());
         m_list_devices.append(obj.toVariantMap());
     }
     return m_list_devices;

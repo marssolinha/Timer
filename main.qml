@@ -57,6 +57,36 @@ ApplicationWindow {
         onController_alertChanged: countdown.timeToString(controller_alert);
     }
 
+    Shortcut {
+        sequence: "Ctrl+C"
+        onActivated: settings.type = 1
+    }
+
+    Shortcut {
+        sequence: "Ctrl+R"
+        onActivated: settings.type = 0
+    }
+
+    Shortcut {
+        sequence: "Alt+C"
+        onActivated: dialogConnection.validateFields()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+S"
+        onActivated: !object.timer_started ? start_pause_timer() : ""
+    }
+
+    Shortcut {
+        sequence: "Ctrl+P"
+        onActivated: object.timer_started ? start_pause_timer() : ""
+    }
+
+    Shortcut {
+        sequence: "Ctrl+B"
+        onActivated: object.timer_started || object.timer_paused ? countdown.prepareStopTime() : ""
+    }
+
     header: ToolBar {
         Material.primary: object.alert_color
         topPadding: Qt.platform.os === "ios" ? Screen.height - Screen.desktopAvailableHeight : 0
@@ -82,10 +112,20 @@ ApplicationWindow {
             }
 
             RowLayout {
-                enabled: !object.timer_started
                 Layout.fillHeight: true
 
                 ToolButton {
+                    visible: object.timer_started && settings.type == 1
+                    Layout.fillHeight: true
+                    text: "\uE308"
+                    font.family: material_icon.name
+                    font.pixelSize: 28
+
+                    onClicked: dialogDevicesConnected.open()
+                }
+
+                ToolButton {
+                    enabled: !object.timer_started
                     Layout.fillHeight: true
                     text: "\uE337"
                     font.family: material_icon.name
@@ -140,17 +180,7 @@ ApplicationWindow {
                     font.family: material_icon.name
                     font.pixelSize: Math.round(parent.height * 0.65)
 
-                    onClicked: {
-                        if (object.timer_paused) {
-                            countdown.prepareResumeTime();
-                        } else if (!object.timer_started) {
-                            countdown.setTimeString(completeZero(controllerPage.define_timer.getHours) + ":" +
-                                                    completeZero(controllerPage.define_timer.getMinutes) + ":" +
-                                                    completeZero(controllerPage.define_timer.getSeconds));
-                        } else {
-                            countdown.preparePauseTime();
-                        }
-                    }
+                    onClicked: start_pause_timer();
                 }
             }
 
@@ -169,6 +199,19 @@ ApplicationWindow {
                     onClicked: dialogSettings.open()
                 }
             }
+        }
+    }
+
+    function start_pause_timer()
+    {
+        if (object.timer_paused) {
+            countdown.prepareResumeTime();
+        } else if (!object.timer_started) {
+            countdown.setTimeString(completeZero(controllerPage.define_timer.getHours) + ":" +
+                                    completeZero(controllerPage.define_timer.getMinutes) + ":" +
+                                    completeZero(controllerPage.define_timer.getSeconds));
+        } else {
+            countdown.preparePauseTime();
         }
     }
 
@@ -318,7 +361,7 @@ ApplicationWindow {
         onTimerPauseChanged: object.timer_paused = timerPause
         onSend_timerChanged: tcp_connect.setData_send(send_timer)
         onSend_commandChanged: tcp_connect.setData_send(send_command)
-        onSend_timerIfRunningChanged: console.log(Object.keys(send_timerIfRunning))
+        onSend_timerIfRunningChanged: tcp_connect.setData_sendIfRunning(send_timerIfRunning)
     }
 
     Timer {
@@ -347,6 +390,7 @@ ApplicationWindow {
         serviceType: settings.type
         local_addr: settings.local_addr
         addressController: settings.controller_addr
+        onReceive_current_time_controllerChanged: countdown.getCurrentTimeController(receive_current_time_controller)
         onReceive_timerChanged: countdown.setTimeFromController(receive_timer)
         onReceive_commandChanged: countdown.getCommand(receive_command)
         onAddressControllerChanged: settings.controller_addr = addressController

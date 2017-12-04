@@ -56,6 +56,7 @@ public slots:
     inline bool status_timer() { return m_status_timer; }
 
     void setTimeString(QString get_time);
+    void getCurrentTimeController(QJsonObject obj_time);
     void setTimeFromController(QJsonObject get_timer);
     void setTime_alert(qint32 quint_time);
     void prepareStopTime();
@@ -76,10 +77,6 @@ private slots:
     void realtTime();
 
 private:
-    QString m_time_string;
-    qint32 m_time;
-    qint32 m_time_start;
-    qint32 m_time_alert = 0;
     bool m_alert = false;
     bool m_status_timer = false;
     bool m_timer_pause = false;
@@ -95,6 +92,9 @@ private:
     inline QJsonObject send_command() { return m_object_command; }
 
     QTimer *timer, *realtime;
+    QString m_time_string;
+    qint32 m_time, m_time_start, m_time_alert = 0;
+    qint32 m_current_time_controller = 0, m_current_time = 0;
     qint32 m_timer = 0, m_timer_start = 0, m_time_end = 0, m_diff = 0;
     QJsonObject m_object_time, m_object_command;
 

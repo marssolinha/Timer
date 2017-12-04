@@ -10,6 +10,7 @@
 #include <QJsonDocument>
 #include <QList>
 #include <QDebug>
+#include <QDateTime>
 
 class TcpConnect : public QObject
 {
@@ -19,6 +20,7 @@ class TcpConnect : public QObject
     Q_PROPERTY(QString nameController READ nameController WRITE setNameController NOTIFY nameControllerChanged)
     Q_PROPERTY(QString local_addr READ local_addr WRITE setLocal_addr NOTIFY local_addrChanged)
     Q_PROPERTY(bool receiver_connect READ receiver_connect NOTIFY receiver_connectChanged)
+    Q_PROPERTY(QJsonObject receive_current_time_controller READ receive_current_time_controller NOTIFY receive_current_time_controllerChanged)
     Q_PROPERTY(QJsonObject receive_timer READ receive_timer NOTIFY receive_timerChanged)
     Q_PROPERTY(QJsonObject receive_command READ receive_command NOTIFY receive_commandChanged)
     Q_PROPERTY(qint32 devices READ devices NOTIFY devicesChanged)
@@ -76,6 +78,10 @@ Q_SIGNALS:
      * @brief local_addrChanged
      */
     void local_addrChanged();
+    /**
+     * @brief receive_current_time_controllerChanged
+     */
+    void receive_current_time_controllerChanged();
 
 public slots:
     /**
@@ -83,6 +89,11 @@ public slots:
      * @param obj
      */
     void setData_send(QJsonObject obj);
+    /**
+     * @brief setData_sendIfRunning
+     * @param obj
+     */
+    void setData_sendIfRunning(QJsonObject obj);
     /**
      * @brief server_disconnectClient
      * @param index
@@ -134,6 +145,7 @@ private slots:
      * @brief server_incomingConnect
      */
     void server_incomingConnect();
+    void prepare_current_time_toSend(QTcpSocket *&_client);
     /**
      * @brief server_readSocket
      */
@@ -142,7 +154,7 @@ private slots:
      * @brief server_sendIfTimerRunning
      * @param _client
      */
-    void server_sendIfTimerRunning();
+    void server_sendIfTimerRunning(const QJsonArray data);
     /**
      * @brief server_parseCommand
      */
@@ -216,6 +228,9 @@ private:
 
     QString m_nameController;
     QString nameController() { return m_nameController; }
+
+    QJsonObject m_receive_current_time_controller = {};
+    inline QJsonObject receive_current_time_controller() { return m_receive_current_time_controller; }
 
     QJsonObject m_receive_timer = {};
     inline QJsonObject receive_timer() { return m_receive_timer; }
