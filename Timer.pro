@@ -22,15 +22,18 @@ SOURCES += main.cpp \
 
 android {
     QT += androidextras
-    SOURCES += source/statusbar/statusbar_android.cpp
+    SOURCES += source/statusbar/statusbar_android.cpp \
+               source/functions/keepscreenon_android.cpp
     DISTFILES += \
         android/AndroidManifest.xml \
         android/res/values/libs.xml
 } else:ios {
     LIBS += -framework UIKit
+    SOURCES += source/functions/keepscreenon_ios.cpp
     OBJECTIVE_SOURCES += source/statusbar/statusbar_ios.mm
 } else {
-    SOURCES += source/statusbar/statusbar_dummy.cpp
+    SOURCES += source/statusbar/statusbar_dummy.cpp \
+               source/functions/keepscreenon.cpp
 }
 
 RESOURCES += qml.qrc
@@ -51,6 +54,7 @@ HEADERS += \
     source/networkdiscovery.h \
     source/tcpconnect.h \
     source/countdown.h \
-    source/statusbar/statusbar.h
+    source/statusbar/statusbar.h \
+    source/functions/keepscreenon.h
 
 

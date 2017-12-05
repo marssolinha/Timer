@@ -8,6 +8,8 @@
 #include <QJsonArray>
 #include <QDebug>
 
+#include "functions/keepscreenon.h"
+
 class Countdown : public QObject
 {
     Q_OBJECT
@@ -105,6 +107,8 @@ private:
 
     QString m_real_time;
     inline QString getRealTime() { return m_real_time; }
+
+    KeepScreenOn keepScreen;
 };
 
 #endif // TIMER_H

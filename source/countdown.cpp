@@ -127,6 +127,7 @@ void Countdown::TimerStart()
     timer->start();
     m_status_timer = true;
     status_timerChanged();
+    keepScreen.on();
 }
 
 void Countdown::TimerStop()
@@ -144,6 +145,7 @@ void Countdown::TimerStop()
     emit hoursChanged();
     emit minutesChanged();
     emit secondsChanged();
+    keepScreen.off();
 }
 
 void Countdown::TimerPause()
