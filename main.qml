@@ -440,4 +440,11 @@ ApplicationWindow {
         theme: Material.Dark
         color: object.alert_color
     }
+
+    onClosing: {
+        if (Qt.platform.os == "android")
+        {
+            close.accepted = false
+        }
+    }
 }
