@@ -57,4 +57,14 @@ HEADERS += \
     source/statusbar/statusbar.h \
     source/functions/keepscreenon.h
 
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/res/values/libs.xml \
+    android/res/drawable-hdpi/ic_launcher.png \
+    android/res/drawable-ldpi/ic_launcher.png \
+    android/res/drawable-mdpi/ic_launcher.png \
+    android/res/drawable-xhdpi/ic_launcher.png \
+    android/res/drawable-xxhdpi/ic_launcher.png \
+    android/res/drawable-xxxhdpi/ic_launcher.png
 
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
