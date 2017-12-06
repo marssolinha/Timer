@@ -12,5 +12,6 @@
         <file>ui/ReceiverPage.qml</file>
         <file>ui/DialogSettings.qml</file>
         <file>ui/DialogDevicesConnected.qml</file>
+        <file>fonts/Ubuntu.ttf</file>
     </qresource>
 </RCC>

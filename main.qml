@@ -20,6 +20,7 @@ ApplicationWindow {
     height: 500
     title: qsTr("Timer")
     flags: Qt.Window | Qt.MaximizeUsingFullscreenGeometryHint
+    font: ubuntu.name
 
     QtObject {
         id: object
@@ -367,11 +368,6 @@ ApplicationWindow {
         }
     }
 
-    FontLoader {
-        id: material_icon
-        source: "qrc:/fonts/MaterialIcons.ttf"
-    }
-
     HostInfo {
         id: host
 
@@ -439,6 +435,16 @@ ApplicationWindow {
         id: statusBar
         theme: Material.Dark
         color: object.alert_color
+    }
+
+    FontLoader {
+        id: ubuntu
+        source: "qrc:/fonts/Ubuntu.ttf"
+    }
+
+    FontLoader {
+        id: material_icon
+        source: "qrc:/fonts/MaterialIcons.ttf"
     }
 
     onClosing: {
