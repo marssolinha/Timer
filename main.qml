@@ -44,7 +44,7 @@ ApplicationWindow {
         property int pin: 0
         property string controller_name: ""
         property string controller_addr: ""
-        property string controller_pin: ""
+        property int controller_pin: 0
         property int controller_alert: 0
 
         property string local_name: ""

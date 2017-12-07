@@ -3,7 +3,7 @@
 
 KeepScreenOn::KeepScreenOn(QObject *parent) : QObject(parent)
 {
-    qDebug() << "KeepScreen desktop";
+
 }
 
 void KeepScreenOn::on()

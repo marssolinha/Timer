@@ -108,6 +108,9 @@ Dialog {
                                 width: parent.width
                                 placeholderText: qsTr("Código PIN")
                                 text: settings.controller_pin
+                                validator: IntValidator {
+                                    top: 4
+                                }
 
                                 onTextChanged: settings.controller_pin = text
                             }
