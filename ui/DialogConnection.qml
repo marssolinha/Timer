@@ -109,10 +109,10 @@ Dialog {
                                 placeholderText: qsTr("Código PIN")
                                 text: settings.controller_pin
                                 validator: IntValidator {
-                                    top: 4
+                                    bottom: 1111
+                                    top: 9999
                                 }
-
-                                onTextChanged: settings.controller_pin = text
+                                onTextChanged: (text === "")? settings.controller_pin = parseInt(0) : settings.controller_pin = parseInt(text)
                             }
                         }
                     }
@@ -237,14 +237,13 @@ Dialog {
                 ++validate;
                 _message += "* É necessário indicar um controlador<br/>";
             }
-            if (settings.controller_pin === "") {
+            if (settings.controller_pin === "" || settings.controller_pin === 0) {
                 ++validate;
                 _message += "* É necessário indicar o código PIN do controlador";
             }
 
             if (validate > 0) {
-                message._text = _message;
-                message.visible = true;
+                object.notification = _message;
                 return;
             }
 

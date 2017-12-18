@@ -7,7 +7,7 @@ Dialog {
     id: dialog
     title: qsTr("Código PIN")
     width: window.width < 300? window.width -10 : 300
-    height: 200
+    height: 250
 
     modal: true
     x: (window.width - width) /2
@@ -25,11 +25,30 @@ Dialog {
             id: column
             anchors.fill: parent
             anchors.margins: 5
-            spacing: 10
 
             RowLayout {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 40
+
+                Label {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    verticalAlignment: Label.AlignVCenter
+                    horizontalAlignment: Label.AlignHCenter
+                    text: qsTr("Configuração manual")
+                }
+
+                Switch {
+                    id: switch_pin
+                    Layout.fillHeight: true
+                    checked: settings.pin_manual
+                    onCheckedChanged: settings.pin_manual = checked
+                }
+            }
+
+            RowLayout {
+                visible: !switch_pin.checked
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
                 Label {
                     Layout.fillWidth: true
@@ -48,6 +67,28 @@ Dialog {
                     Material.background: Material.color(Material.Green, Material.Shade500)
 
                     onClicked: host.generatePin(Date.now());
+                }
+            }
+
+            RowLayout {
+                visible: switch_pin.checked
+                Layout.fillWidth: true
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 60
+
+                    TextField {
+                        width: parent.width * 0.7
+                        anchors.centerIn: parent
+                        placeholderText: qsTr("Código PIN")
+                        text: settings.pin
+                        onTextChanged: (text === "")? 0 : settings.pin = text
+                        validator: IntValidator {
+                            bottom: 1111
+                            top: 9999
+                        }
+                    }
                 }
             }
         }

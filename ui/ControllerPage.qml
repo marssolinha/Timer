@@ -48,22 +48,5 @@ Item {
                 ColorAnimation { to: "transparent"; duration: 5000 }
             }
         }
-
-        /*Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 1
-            color: object.border_up
-        }
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 3
-        }
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 1
-            color: object.border_down
-        }*/
-
-
     }
 }

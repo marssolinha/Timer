@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QSettings>
 #include <QDebug>
 
 #include "functions/keepscreenon.h"
@@ -15,6 +16,7 @@ class Countdown : public QObject
     Q_OBJECT
     Q_PROPERTY(QString timeString READ time WRITE setTimeString NOTIFY timeStringChanged)
     Q_PROPERTY(qint32 time READ time NOTIFY timeChanged)
+    Q_PROPERTY(qint32 timeStart READ timeStart NOTIFY timeStartChanged)
     Q_PROPERTY(qint32 time_alert READ time_alert WRITE setTime_alert NOTIFY time_alertChanged)
     Q_PROPERTY(bool status_timer READ status_timer NOTIFY status_timerChanged)
     Q_PROPERTY(bool timerPause READ timerPause NOTIFY timerPauseChanged)
@@ -30,11 +32,14 @@ class Countdown : public QObject
     Q_PROPERTY(QString convertSeconds READ convertSeconds NOTIFY convertSecondsChanged)
     Q_PROPERTY(QString getRealTime READ getRealTime NOTIFY getRealTimeChanged)
 
+    Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
+
 public:
     explicit Countdown(QObject *parent = nullptr);
 
 signals:
     void timeChanged();
+    void timeStartChanged();
     void timeStringChanged();
     void time_alertChanged();
     void alertChanged();
@@ -51,15 +56,18 @@ signals:
     void convertMinutesChanged();
     void convertSecondsChanged();
     void getRealTimeChanged();
+    void busyChanged();
 
 public slots:
     inline QString timeString() { return m_time_string; }
     inline qint32 time() { return m_time; }
+    inline qint32 timeStart() { return m_time_start; }
     inline bool status_timer() { return m_status_timer; }
 
     void setTimeString(QString get_time);
     void getCurrentTimeController(QJsonObject obj_time);
     void setTimeFromController(QJsonObject get_timer);
+    void continueTimerConfigured();
     void setTime_alert(qint32 quint_time);
     void prepareStopTime();
     void preparePauseTime();
@@ -77,6 +85,7 @@ private slots:
     void TimerPause();
     void TimerResume();
     void realtTime();
+    void busy_changed(bool _busy);
 
 private:
     bool m_alert = false;
@@ -109,6 +118,10 @@ private:
     inline QString getRealTime() { return m_real_time; }
 
     KeepScreenOn keepScreen;
+
+    QSettings settings;
+    bool m_busy = false;
+    bool busy() { return m_busy; }
 };
 
 #endif // TIMER_H

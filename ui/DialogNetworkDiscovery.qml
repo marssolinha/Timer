@@ -20,15 +20,38 @@ Dialog {
         width: parent.width
         height: parent.height
 
-        ColumnLayout {
-            id: column
+        Column {
             anchors.fill: parent
-            anchors.margins: 5
-            spacing: 10
 
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 40
+            SwitchDelegate {
+                width: parent.width
+                height: 40
+                text: qsTr("Configuração manual")
+                checked: settings.controller_manual
+                onCheckedChanged: settings.controller_manual = checked
+            }
+
+            RowLayout {
+                visible: settings.controller_manual
+                width: parent.width
+                height: 60
+
+                TextField {
+                    id: textfield_controller_addr
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
+                    text: settings.controller_addr
+                    placeholderText: qsTr("Endereço de IP (ex: 192.168.1.10)")
+                    validator: RegExpValidator {
+                        regExp: /[0-9-.]+/
+                    }
+                }
+            }
+
+            RowLayout {
+                visible: !settings.controller_manual
+                width: parent.width
+                height: 60
 
                 RoundButton {
                     text: "\uE8B6"
@@ -46,8 +69,9 @@ Dialog {
 
             ListView {
                 id: list_controller
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+                visible: !settings.controller_manual
+                width: parent.width
+                height: parent.height -100
                 clip: true
 
                 ScrollIndicator.vertical: ScrollIndicator {}
@@ -76,9 +100,12 @@ Dialog {
     }
 
     onAccepted: {
-        if (networkDiscovery.controller.length > 0) {
+        if (networkDiscovery.controller.length > 0 && !settings.controller_manual) {
             settings.controller_name = networkDiscovery.controller[list_controller.currentIndex].device;
             settings.controller_addr = networkDiscovery.controller[list_controller.currentIndex].address;
+        } else {
+            settings.controller_addr = textfield_controller_addr.text
+            settings.controller_name = ""
         }
     }
 }

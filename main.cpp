@@ -10,6 +10,8 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setOrganizationName("MarssolaSoft");
+    QCoreApplication::setApplicationName("Timer");
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<StatusBar>("StatusBar", 0, 1, "StatusBar");

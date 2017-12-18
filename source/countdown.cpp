@@ -11,11 +11,18 @@ Countdown::Countdown(QObject *parent) :
 
 void Countdown::setTimeString(QString get_time)
 {
+    busy_changed(true);
     m_time = QDateTime::fromString(QString("1970-01-01 %1 -00").arg(get_time), Qt::ISODate).toTime_t();
     m_time_start = QDateTime::currentDateTimeUtc().toTime_t();
     m_time_end = m_time + m_time_start;
+
+    settings.setValue("timer_configured_running", true);
+    settings.setValue("timer_configured_time", m_time);
+    settings.setValue("timer_configured_time_start", m_time_start);
+
     timer->setInterval(40);
     prepareStartTime();
+    busy_changed(false);
 }
 
 void Countdown::getCurrentTimeController(QJsonObject obj_time)
@@ -27,13 +34,36 @@ void Countdown::getCurrentTimeController(QJsonObject obj_time)
 
 void Countdown::setTimeFromController(QJsonObject get_timer)
 {
+    busy_changed(true);
     m_time = get_timer.value("time").toInt();
     m_time_start = get_timer.value("time_start").toInt();
     m_time_end = get_timer.value("time_end").toInt();
     m_time_alert = get_timer.value("time_alert").toInt();
 
+    settings.setValue("timer_configured_running", true);
+    settings.setValue("timer_configured_time", m_time);
+    settings.setValue("timer_configured_time_start", m_time_start);
+
     emit timeChanged();
     emit time_alertChanged();
+    busy_changed(false);
+}
+
+void Countdown::continueTimerConfigured()
+{
+    busy_changed(true);
+    m_time = settings.value("timer_configured_time").toInt();
+    m_time_start = settings.value("timer_configured_time_start").toInt();
+    m_time_end = m_time_start + m_time;
+
+    if (QDateTime::currentDateTimeUtc().toTime_t() < m_time_end) {
+        timer->setInterval(40);
+        prepareStartTime();
+    } else {
+        TimerStop();
+        prepareStopTime();
+    }
+    busy_changed(false);
 }
 
 void Countdown::setTime_alert(qint32 quint_time)
@@ -111,7 +141,6 @@ void Countdown::timeToString(qint32 get_time)
 
 void Countdown::Timer()
 {
-    //m_timer = m_time - (qint32)((qint64)m_time_end - QDateTime::currentDateTimeUtc().toTime_t() - m_diff);
     m_timer = (QDateTime::currentDateTimeUtc().toTime_t() - m_diff) - m_time_start;
     if ((m_time - m_timer) < m_time_alert) {
         m_alert = true;
@@ -138,6 +167,10 @@ void Countdown::TimerStop()
     m_status_timer = false;
     m_timer_pause = false;
     m_alert = false;
+
+    settings.setValue("timer_configured_running", false);
+    settings.setValue("timer_configured_time", m_time);
+    settings.setValue("timer_configured_time_start", m_time);
 
     emit alertChanged();
     emit timerPauseChanged();
@@ -166,4 +199,10 @@ void Countdown::realtTime()
 {
     m_real_time = QDateTime::currentDateTimeUtc().toString("dd/MM/yyyy hh:mm:ss:zzz");
     emit getRealTimeChanged();
+}
+
+void Countdown::busy_changed(bool _busy)
+{
+    m_busy = _busy;
+    emit busyChanged();
 }

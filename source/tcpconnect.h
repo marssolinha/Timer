@@ -28,6 +28,9 @@ class TcpConnect : public QObject
     Q_PROPERTY(qint32 devices READ devices NOTIFY devicesChanged)
     Q_PROPERTY(QList<QVariant> list_devices READ list_devices NOTIFY list_devicesChanged)
 
+    Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
+    Q_PROPERTY(QString notification READ notification NOTIFY notificationChanged)
+
 public:
     /**
      * @brief TcpConnect
@@ -92,6 +95,14 @@ Q_SIGNALS:
      * @brief receive_current_time_controllerChanged
      */
     void receive_current_time_controllerChanged();
+    /**
+     * @brief busyChanged
+     */
+    void busyChanged();
+    /**
+     * @brief notificationChanged
+     */
+    void notificationChanged();
 
 public slots:
     /**
@@ -160,6 +171,10 @@ private slots:
      * @brief server_incomingConnect
      */
     void server_incomingConnect();
+    /**
+     * @brief prepare_current_time_toSend
+     * @param _client
+     */
     void prepare_current_time_toSend(QTcpSocket *&_client);
     /**
      * @brief server_readSocket
@@ -225,6 +240,17 @@ private slots:
      */
     void setLocal_addr(const QString address);
 
+    /**
+     * @brief busy_changed
+     * @param _busy
+     */
+    void busy_changed(bool _busy);
+    /**
+     * @brief notification_changed
+     * @param _notification
+     */
+    void notification_changed(QString _notification);
+
 private:
     QTcpServer *server;
     QTcpSocket *client;
@@ -273,6 +299,12 @@ private:
 
     QString m_local_addr;
     QString local_addr() { return m_local_addr; }
+
+    bool m_busy = false;
+    bool busy() { return m_busy; }
+
+    QString m_notification = "";
+    QString notification() { return m_notification; }
 };
 
 #endif // TCPCONNECT_H

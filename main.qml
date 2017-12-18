@@ -25,14 +25,24 @@ ApplicationWindow {
     QtObject {
         id: object
 
+        property bool busy: false
         property bool timer_started: false
         property bool timer_paused: false
         property int _time: 0
         property int _counttimer: 0
         property bool alert: countdown.alert
+        property double alert_alpha: 0
         property color alert_color: Material.color(Material.Red, Material.Shade900)
         property color border_up: "#101010"
         property color border_down: "#2f2f2f"
+        property string notification: ""
+
+        onNotificationChanged: {
+            if (notification !== "") {
+                message._text = notification
+                message.visible = true
+            }
+        }
     }
 
     Material.accent: Material.color(Material.Red, Material.Shade500)
@@ -42,6 +52,8 @@ ApplicationWindow {
         id: settings
         property int type: 0
         property int pin: 0
+        property bool pin_manual: false
+        property bool controller_manual: false
         property string controller_name: ""
         property string controller_addr: ""
         property int controller_pin: 0
@@ -50,9 +62,18 @@ ApplicationWindow {
         property string local_name: ""
         property string local_addr: ""
 
+        property bool timer_configured_running: false
+        property int timer_configured_time: 0
+        property int timer_configured_time_start: 0
+
         Component.onCompleted: {
             if (pin == 0 || pin === "")
                 pin = host.getPin();
+
+            if (timer_configured_running && timer_configured_time_start > 0)
+                countdown.continueTimerConfigured();
+            if (controller_addr !== "" && controller_pin > 0)
+                tcp_connect.client_connectController();
         }
 
         onController_alertChanged: countdown.timeToString(controller_alert);
@@ -126,7 +147,7 @@ ApplicationWindow {
                 }
 
                 ToolButton {
-                    enabled: !object.timer_started
+                    enabled: settings.type == 1 && object.timer_started? false : true
                     Layout.fillHeight: true
                     text: "\uE337"
                     font.family: material_icon.name
@@ -164,8 +185,13 @@ ApplicationWindow {
                     }
 
                     onClicked: {
-                        dialogConnection.open();
+                        if (!object.timer_started)
+                            dialogConnection.open();
                         statusBar.theme = StatusBar.Dark
+                    }
+                    onPressAndHold: {
+                        dialogConnection.validateFields();
+                        countdown.prepareStopTime();
                     }
                 }
             }
@@ -368,6 +394,31 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: message
+        onVisibleChanged: if (!message.visible) object.notification = ""
+    }
+
+    Rectangle {
+        visible: object.busy
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.8)
+        z: 3
+
+        BusyIndicator {
+            id: busy_indicator
+            anchors.centerIn: parent
+        }
+        Text {
+            width: parent.width
+            anchors.top: busy_indicator.bottom
+            horizontalAlignment: Text.AlignHCenter
+
+            color: "#fff"
+            text: qsTr("aguarde...")
+        }
+    }
+
     HostInfo {
         id: host
 
@@ -389,6 +440,7 @@ ApplicationWindow {
         onSend_timerChanged: tcp_connect.setData_send(send_timer)
         onSend_commandChanged: tcp_connect.setData_send(send_command)
         onSend_timerIfRunningChanged: tcp_connect.setData_sendIfRunning(send_timerIfRunning)
+        onBusyChanged: object.busy = busy
     }
 
     Timer {
@@ -425,6 +477,9 @@ ApplicationWindow {
         onAddressControllerChanged: settings.controller_addr = addressController
         onNameControllerChanged: settings.controller_name = nameController
         onSend_TimerIfRunning: countdown.prepareRequestTimerIfRunning()
+
+        onBusyChanged: object.busy = busy
+        onNotificationChanged: object.notification = notification
     }
 
     Connections {

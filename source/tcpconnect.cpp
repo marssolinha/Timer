@@ -26,6 +26,7 @@ void TcpConnect::setPinPass(qint16 pin_code)
 
 void TcpConnect::interpreterService()
 {
+    busy_changed(true);
     switch (m_service_type) {
     case RECEIVER:
         server_disconnectAllSockets();
@@ -36,6 +37,7 @@ void TcpConnect::interpreterService()
         server_start();
         break;
     }
+    busy_changed(false);
 }
 
 /*
@@ -71,8 +73,10 @@ void TcpConnect::server_incomingConnect()
 
     prepare_current_time_toSend(_client);
     clients.append(qMakePair(std::move(_client), false));
+
     emit devicesChanged();
     emit list_devicesChanged();
+    notification_changed(QString("Um novo dispositivo conectado: %1").arg(_client->peerAddress().toString()));
 }
 
 void TcpConnect::prepare_current_time_toSend(QTcpSocket *&_client)
@@ -182,6 +186,7 @@ void TcpConnect::server_disconnectSocket()
     qint32 i = 0;
     for (auto v_client : clients) {
         if (v_client.first->state() != QTcpSocket::ConnectedState) {
+            notification_changed(QString("Dispositivo desconectado: %1").arg(v_client.first->peerAddress().toString()));
             v_client.first->close();
             v_client.first->deleteLater();
             clients.removeAt(i);
@@ -211,8 +216,10 @@ void TcpConnect::server_disconnectAllSockets()
 
 void TcpConnect::client_connectController()
 {
+    busy_changed(true);
     if (m_addressController != "" && m_service_type == RECEIVER)
         client->connectToHost(m_addressController, controller_port);
+    busy_changed(false);
 }
 
 void TcpConnect::client_connectedController()
@@ -225,10 +232,13 @@ void TcpConnect::client_connectedController()
 
 void TcpConnect::client_disconnectController()
 {
+    busy_changed(true);
+    notification_changed("Este dispositivo está desconectado");
     if (client->isOpen())
         client->close();
     client_state = false;
     emit receiver_connectChanged();
+    busy_changed(false);
 }
 
 void TcpConnect::client_disconnected()
@@ -297,6 +307,18 @@ void TcpConnect::setLocal_addr(const QString address)
 {
     m_local_addr = address;
     emit local_addrChanged();
+}
+
+void TcpConnect::busy_changed(bool _busy)
+{
+    m_busy = _busy;
+    emit busyChanged();
+}
+
+void TcpConnect::notification_changed(QString _notification)
+{
+    m_notification = _notification;
+    emit notificationChanged();
 }
 
 QList<QVariant> TcpConnect::list_devices()
