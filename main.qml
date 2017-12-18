@@ -96,12 +96,12 @@ ApplicationWindow {
 
     Shortcut {
         sequence: "Ctrl+S"
-        onActivated: !object.timer_started ? start_pause_timer() : ""
+        onActivated: !object.timer_started ? start_timer() : ""
     }
 
     Shortcut {
         sequence: "Ctrl+P"
-        onActivated: object.timer_started ? start_pause_timer() : ""
+        onActivated: object.timer_started ? start_timer() : ""
     }
 
     Shortcut {
@@ -219,7 +219,7 @@ ApplicationWindow {
                     font.family: material_icon.name
                     font.pixelSize: 45
 
-                    onClicked: countdown.prepareStopTime()
+                    onPressAndHold: countdown.prepareStopTime()
                 }
             }
 
@@ -238,7 +238,8 @@ ApplicationWindow {
                     font.family: material_icon.name
                     font.pixelSize: Math.round(parent.height * 0.65)
 
-                    onClicked: start_pause_timer();
+                    onClicked: start_timer();
+                    onPressAndHold: pause_timer();
                 }
             }
 
@@ -260,17 +261,23 @@ ApplicationWindow {
         }
     }
 
-    function start_pause_timer()
+    function start_timer()
     {
-        if (object.timer_paused) {
+        /*if (object.timer_paused) {
             countdown.prepareResumeTime();
-        } else if (!object.timer_started) {
+        } else */if (!object.timer_started) {
             countdown.setTimeString(completeZero(controllerPage.define_timer.getHours) + ":" +
                                     completeZero(controllerPage.define_timer.getMinutes) + ":" +
                                     completeZero(controllerPage.define_timer.getSeconds));
-        } else {
+        }/* else {
             countdown.preparePauseTime();
-        }
+        }*/
+    }
+
+    function pause_timer()
+    {
+        if (object.timer_started && !object.timer_paused)
+            countdown.preparePauseTime();
     }
 
     ReceiverPage {

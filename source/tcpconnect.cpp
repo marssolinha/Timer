@@ -233,9 +233,10 @@ void TcpConnect::client_connectedController()
 void TcpConnect::client_disconnectController()
 {
     busy_changed(true);
-    notification_changed("Este dispositivo está desconectado");
-    if (client->isOpen())
+    if (client->isOpen()) {
+        notification_changed("Este dispositivo está desconectado");
         client->close();
+    }
     client_state = false;
     emit receiver_connectChanged();
     busy_changed(false);
